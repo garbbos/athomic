@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+<head>
+    <title>Athomic</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/png" href="img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="libs/estilo.css">
+    <link rel="stylesheet" type="text/css" href="libs/jquery.mobile-1.4.5.min.css">
+
+    <script type="text/javascript" src="libs/jquery.min.js"></script>
+    <script type="text/javascript" src="libs/jquery.mobile.min.js"></script>
+    <script type="text/javascript" src="libs/openDB.js" defer></script>
+    <script type="text/javascript" src="libs/app.js" defer></script>
+</head>
+
+<body>
+
+    <div data-role="page" data-theme="a" id="app">
+        <div data-role="header" class="ui-shadow color cabecera">
+                  <div data-role="navbar">
+                        <ul>
+                              <li><a href="#" id="setup" data-icon="bars" class="color"></a></li>
+                              <li><a href="#" id="import" data-icon="recycle" class="color"></a></li>
+                              <li><a href="#" id="export" data-icon="action" class="color"></a></li>
+                        </ul>
+                  </div>
+        </div>
+
+        <div data-role="main" id="principal" class="ui-content">
+                <form class="ui-filterable">
+                    <input id="myFilter" data-type="search" placeholder="Search...">
+                </form>
+
+                <ul id="lista" data-role="listview" data-filter="true" data-input="#myFilter" data-inset="true">
+                </ul>
+        </div>
+
+
+      <!-- marco para grabar información de clientes -->
+      <div data-role="popup" data-theme="o" data-overlay-theme="a" id="nuevo_cliente" class="ui-content color">
+            <h2 id="titulo_nuevo">New Client</h2>
+            <form id="form_datos" name="formo">
+                    <input class="myconf" id="id_cif" type="text" name="cif" placeholder="CIF" autofocus>
+                    <input class="myconf" id="id_nombre" type="text" name="nombre" placeholder="Nombre">
+                    <input class="myconf" id="id_telefono" type="tel" name="telefono" placeholder="Teléfono">
+                    <input class="myconf" id="id_email" type="email" name="email" placeholder="Email">
+                    <input class="myconf" id="id_url" type="url" name="url" placeholder="Web">
+                    <input class="myconf" id="id_domicilio" type="text" name="domicilio" placeholder="Domicilio">
+                    <input class="myconf" id="id_cp" type="text" name="cp" placeholder="Código Postal">
+                    <input class="myconf" id="id_poblacion" type="text" name="poblacion" placeholder="Población">
+                    <input class="myconf" id="id_pais" type="text" name="pais" placeholder="País">
+            </form>
+            <a href="#" data-rel="" id="btn_save" class="ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">Save</a>
+            <a href="#" data-rel="back" id="btn_cancel" class="ui-btn ui-icon-delete ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">Cancel</a>
+        </div>
+
+        <!-- marco para grabar información de facturas -->
+        <div data-role="popup" data-theme="o" data-overlay-theme="a" id="nuevobill" class="ui-content color">
+            <h2 id="titulobill">Billing</h2>
+
+            <div class="ui-content datos color">
+                <p id="cifbill"></p>
+                <p id="telefonobill"></p>
+                <p class="datos"></p>
+
+                <p id="numerobill"></p>
+                <p id="fechabill"></p>
+                <form id="form_bill" name="formobill">
+                    <input id="concepto" type="text" name="concepto" placeholder="Concepto">
+                    <input id="cantidad" type="number" name="cantidad" placeholder="Cantidad">
+                    <input id="precio" type="number" name="precio" placeholder="Precio Unitario">
+                </form>
+            </div>
+            <a href="#" data-rel="" id="btn_save_bill" class="ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">Bill</a>
+            <a href="#" data-rel="back" id="btn_cancel_bill" class="ui-btn ui-icon-delete ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">Cancel</a>
+        </div>
+
+        <!-- Botón inferior de navegación  -->
+        <div id="id_btn_new" class="btn_new">
+            <a href="#" id="id_nuevo_cliente" class="ui-btn ui-btn-inline btn color">+</a>
+        </div>
+
+        <!--    Marco de muestra de comentarios   -->
+        <div id="status_bar" class="status ui-body-g ui-corner-all ui-shadow">
+            <p id="status_msg" class="status_texto"></p>
+        </div>
+
+        <!--  Popup Delete  -->
+        <div data-role="popup" id="popup_delete" class="ui-content color">
+            <h3>Deleting...</h3>
+            <a href="#" id="btn_popup_delete" data-rel="back" class="ui-btn ui-corner-all ui-icon-alert ui-btn-icon-left ui-shadow color">Are you sure?</a>
+        </div>
+
+        <!-- Panel info   -->
+        <div data-role="panel" data-theme="o" data-display="overlay" id="panel" class="ui-content color">
+            <h2 id=panel_titulo>Athomic</h2>
+             <div id="data" class="data">
+                   <ul data-role="listview" id="datapanel" data-inset="true" class="color">
+                   </ul>
+                   <a href="#" data-rel="" id="deleteID" class="ui-btn ui-icon-delete ui-btn-icon-left ui-corner-all ui-shadow color">Delete</a>
+             </div>
+
+             <div class="ui-content">
+                 <p>Technology by</p>
+                 <img src="img/linux-icon-64.png" alt="Linux">
+                 <img src="img/html5.png" alt="HTML5">
+                 <img src="img/firefox.png" alt="Firefox">
+                 <img src="img/Jquery-min.png" alt="JQuery!">
+                 <p>
+                     &copy;2016 Npmada.com
+                 </p>
+              </div>
+        </div>
+    </div>
+</body>
+</html>
