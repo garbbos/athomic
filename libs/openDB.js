@@ -25,11 +25,10 @@ var openDB = (function () {
 
 		add = function (store, data, callback) {
 			var req;
-			callback("OpenDB: Add record " + JSON.stringify(data));
 
 			try {
 				req = store.add(data).onsuccess = function (e) {
-					callback("OpenDB: Add record " + JSON.stringify(data) + " success.");
+					callback("OpenDB: Add record " + JSON.stringify(data['name']) + " success.");
 					return true;
 				};
 			} catch (event) {

@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global $, jQuery, alert, openDB*/
+/*global $, jQuery, alert, openDB, saveAs, Blob*/
 var cons = {
 	NAME: "AthomicDB",
 	VERSION: 1
@@ -15,10 +15,14 @@ var cons = {
 		"cp",
 		"pais"
 	],
-	i = 0, databill = {},
+	i = 0,
+	databill = {},
+	clientesDB = [],
 	forms = $('input.myconf'),
 	panel = $('#panel'),
 	popup_nuevo_cliente = $('#nuevo_cliente'),
+	popup_delete = $('#popup_delete'),
+	deltitulo = $('#deltitulo'),
 	lista = $('#lista'),
 	listapanel = $('#datapanel'),
 	formbill = $('#nuevobill'),
@@ -64,15 +68,16 @@ function clear(objeto) {
 
 function getBill() {
 	'use strict';
-	var n = localStorage.getItem('factura');
+	var n = parseInt(localStorage.fac);
 
 	if (n) {
+		window.console.log("No Factura grabado: " + n);
 		n = n + 1;
 	} else {
 		n = 1;
 	}
 
-	localStorage.setItem('factura', n);
+	localStorage.fac = n;
 	return n;
 }
 
@@ -88,9 +93,9 @@ function bill(data) {
 		$('#cifbill').text("CIF: " + data[empresa[0]]);
 		$('#telefonobill').text("Tel: " + data[empresa[2]]);
 
-		var n = "Fac00000" + getBill();
+		var n = "Nº Fac: 00000" + getBill();
 		numerobill.text(n);
-		fechabill.text(getFullDate());
+		fechabill.text("Fecha: " + getFullDate());
 		databill = data;
 
 		formbill.popup();
@@ -121,7 +126,7 @@ function edit(data) {
 
 var refreshClientes = function (datos) {
 	'use strict';
-	var id, d;
+	var id, cifEvent = "#cif", nameEvent = "#name";
 
 	if (datos) {
 		window.console.log("refreshClientes...");
@@ -131,9 +136,10 @@ var refreshClientes = function (datos) {
 		$("<li>").append("<a href='#' id=" + datos[empresa[1]] + "><h3>" + datos[empresa[1]] + "</h3><p> " + datos[empresa[2]] + "</p></a>").appendTo(lista);
 
 		id = "#" + datos[empresa[1]];
-		$(id).click(function () {
+		$(id).click(function (event) {
 			var z;
-			window.console.log(datos[empresa[1]] + ".click");
+			window.console.log(id + ".click");
+			event.stopPropagation();
 
 			listapanel.empty();
 			for (z in datos) {
@@ -141,18 +147,10 @@ var refreshClientes = function (datos) {
 					if (datos[z]) {
 						if (z === "cif") {
 							$("<li>").append("<a href='#' class='color' id=" + z + ">" + datos[z] + "</a>").appendTo(listapanel);
-							d = "#cif";
-							$(d).click(
-								bill(datos)
-							);
 						} else {
 
 							if (z === "name") {
 								$("<li>").append("<a href='#' class='color' id=" + z + ">" + datos[z] + "</a>").appendTo(listapanel);
-								d = "#name";
-								$(d).click(
-									edit(datos)
-								);
 							} else {
 								$("<li class='color'>").append("<span>" + datos[z] + "</span>").appendTo(listapanel);
 							}
@@ -160,6 +158,18 @@ var refreshClientes = function (datos) {
 					}
 				}
 			}
+
+			$(cifEvent).click(function (event) {
+				//event.stopPropagation();
+				window.console.log(cifEvent + ".click");
+				bill(datos);
+			});
+
+			$(nameEvent).click(function (event) {
+				//event.stopPropagation();
+				window.console.log(nameEvent + ".click");
+				edit(datos);
+			});
 
 			listapanel.listview('refresh');
 			panel.panel('open');
@@ -285,19 +295,10 @@ function importdata() {
 
 function exportClient(data) {
 	'use strict';
-	var clientesDB = [], valido = false;
 
 	if (data) {
-		clientesDB.push(data);
-		valido = true;
-	} else {
-		if (valido) {
-			if (window.saveAs) {
-				if (saveAs("AthomicDB", JSON.stringify(clientesDB))) {
-					texto("AthomicDB is saved.");
-				}
-			}
-		}
+		clientesDB.push(JSON.stringify(data));
+		window.console.log("Export " + data[empresa[1]]);
 	}
 }
 
@@ -305,24 +306,37 @@ function exportdata() {
 	'use strict';
 	window.console.log("Export...");
 
+	deltitulo.text("Export...");
 	openDB.odb.open(cons, null, exportClient, 'read');
+	popup_delete.popup('open', { positionTo: "window", transition: "flip" });
 }
 
 function delDB() {
 	'use strict';
-	var nombre;
+	var nombre, filename = "Athomic.json", blob;
 
-	nombre = $('#name').text();
-	openDB.odb.open(cons, nombre, texto, 'delete');
-	lista.empty();
-	openDB.odb.open(cons, refreshClientes);
+	if (deltitulo.text() === "Export...") {
+
+		try {
+			blob = new Blob(clientesDB, {type: "text/plain;charset=utf-8"});
+			saveAs(blob, filename);
+			texto("AthomicDB is saved.");
+
+		} catch (event) {
+			texto("Error: Athomic.json is not saved.");
+		}
+	} else {
+		nombre = $('#name').text();
+		openDB.odb.open(cons, nombre, texto, 'delete');
+		loadDB();
+	}
 }
 
 function deleteID() {
 	'use strict';
-	var popup_delete = $('#popup_delete');
 
 	panel.panel("close");
+	deltitulo.text("Deleting...");
 	popup_delete.popup('open', { positionTo: "window", transition: "flip" });
 }
 
@@ -383,6 +397,7 @@ function loadEvents() {
 		btn_import = $('#import'),
 		btn_export = $('#export'),
 		btn_save = $('#btn_save'),
+		btn_bill = $('#btn_bill'),
 		btn_delete = $('#deleteID'),
 		btn_popup_delete = $('#btn_popup_delete'),
 		btn_save_bill = $('#btn_save_bill'),
@@ -414,6 +429,10 @@ function loadEvents() {
 
 	btn_delete.click(function () {
 		deleteID();
+	});
+
+	btn_bill.click(function () {
+		savebill();
 	});
 
 	btn_save_bill.click(function () {

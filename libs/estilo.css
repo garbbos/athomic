@@ -84,18 +84,3 @@ a:hover{
       font-size: 2.2em;
       margin: auto;
 }
-.ui-icon-loading {
-    animation-duration: 1s;
-    animation-iteration-count:  infinite;
-    animation-name: spin;
-    animation-timing-function: linear;
-    background: url(http://code.jquery.com/mobile/1.1.0-rc.1/images/ajax-loader.png);
-    background-size: 46px 46px;
-    height:46px;
-    transform: rotate(360deg);
-    width:46px;    
-}
-@-webkit-keyframes spin {
-    from {transform: rotate(0deg);}
-    to {transform: rotate(360deg);}
-}

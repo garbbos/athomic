@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="img/favicon.ico">
     <link rel="stylesheet" type="text/css" href="libs/estilo.css">
     <link rel="stylesheet" type="text/css" href="libs/jquery.mobile-1.4.5.min.css">
-
+    <script type="application/javascript" src="libs/FileSaver.min.js"></script>
     <script type="text/javascript" src="libs/jquery.min.js"></script>
     <script type="text/javascript" src="libs/jquery.mobile.min.js"></script>
     <script type="text/javascript" src="libs/openDB.js" defer></script>
@@ -89,7 +89,7 @@
 
         <!--  Popup Delete  -->
         <div data-role="popup" id="popup_delete" class="ui-content color">
-            <h3>Deleting...</h3>
+            <h3 id="deltitulo">Deleting...</h3>
             <a href="#" id="btn_popup_delete" data-rel="back" class="ui-btn ui-corner-all ui-icon-alert ui-btn-icon-left ui-shadow color">Are you sure?</a>
         </div>
 
@@ -100,6 +100,7 @@
                    <ul data-role="listview" id="datapanel" data-inset="true" class="color">
                    </ul>
                    <a href="#" data-rel="" id="deleteID" class="ui-btn ui-icon-delete ui-btn-icon-left ui-corner-all ui-shadow color">Delete</a>
+                   <a href="#" data-rel="" id="billID" class="ui-btn ui-icon-check ui-btn-icon-left ui-corner-all ui-shadow color">Bill</a>
              </div>
 
              <div class="ui-content">
