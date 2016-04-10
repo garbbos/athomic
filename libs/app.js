@@ -1,9 +1,7 @@
 /*jslint browser: true*/
 /*global $, jQuery, alert, openDB, saveAs, Blob*/
-var cons = {
-	NAME: "AthomicDB",
-	VERSION: 1
-},
+var cons = {NAME: "AthomicDB", VERSION: 1},
+
 	empresa = [
 		"cif",
 		"name",
@@ -16,16 +14,19 @@ var cons = {
 		"pais"
 	],
 	i = 0,
-	databill = {},
 	clientesDB = [],
 	forms = $('input.myconf'),
 	panel = $('#panel'),
+	btn_billID = $('#billID'),
+	btn_delete = $('#deleteID'),
 	popup_nuevo_cliente = $('#nuevo_cliente'),
 	popup_delete = $('#popup_delete'),
 	deltitulo = $('#deltitulo'),
+	paneltitulo = $('#panel_titulo'),
 	lista = $('#lista'),
 	listapanel = $('#datapanel'),
 	formbill = $('#nuevobill'),
+	titulobill = $('#titulobill'),
 	numerobill = $('#numerobill'),
 	fechabill = $('#fechabill'),
 	concepto = $('#concepto'),
@@ -66,9 +67,9 @@ function clear(objeto) {
 	}
 }
 
-function getBill() {
+function getBill(name) {
 	'use strict';
-	var n = parseInt(localStorage.fac);
+	var n = parseInt(localStorage.getItem(name), 10);
 
 	if (n) {
 		window.console.log("No Factura grabado: " + n);
@@ -77,31 +78,10 @@ function getBill() {
 		n = 1;
 	}
 
-	localStorage.fac = n;
+	localStorage.setItem(name, n);
 	return n;
 }
 
-function bill(data) {
-	'use strict';
-
-	if (data) {
-		panel.panel('close');
-
-		window.console.log("Billing... " + JSON.stringify(data[empresa[1]]));
-
-		$('#titulobill').text("Billing      > " + data[empresa[1]]);
-		$('#cifbill').text("CIF: " + data[empresa[0]]);
-		$('#telefonobill').text("Tel: " + data[empresa[2]]);
-
-		var n = "Nº Fac: 00000" + getBill();
-		numerobill.text(n);
-		fechabill.text("Fecha: " + getFullDate());
-		databill = data;
-
-		formbill.popup();
-		formbill.popup('open', {positionTo: "window", transition: "flip"});
-	}
-}
 
 function edit(data) {
 	'use strict';
@@ -124,14 +104,13 @@ function edit(data) {
 	}
 }
 
+
 var refreshClientes = function (datos) {
 	'use strict';
 	var id, cifEvent = "#cif", nameEvent = "#name";
 
 	if (datos) {
-		window.console.log("refreshClientes...");
-
-		window.console.log(JSON.stringify(datos[empresa[1]]));
+		window.console.log("refreshClientes..." + JSON.stringify(datos[empresa[1]]));
 
 		$("<li>").append("<a href='#' id=" + datos[empresa[1]] + "><h3>" + datos[empresa[1]] + "</h3><p> " + datos[empresa[2]] + "</p></a>").appendTo(lista);
 
@@ -162,7 +141,7 @@ var refreshClientes = function (datos) {
 			$(cifEvent).click(function (event) {
 				//event.stopPropagation();
 				window.console.log(cifEvent + ".click");
-				bill(datos);
+				billID();
 			});
 
 			$(nameEvent).click(function (event) {
@@ -181,8 +160,10 @@ var refreshClientes = function (datos) {
 
 function loadDB() {
 	'use strict';
+
 	lista.empty();
 	openDB.odb.open(cons, null, refreshClientes, 'read');
+	paneltitulo.text("Athomic");
 }
 
 function save_client() {
@@ -245,12 +226,35 @@ function save_client() {
 	}
 }
 
+function bill() {
+	'use strict';
+	var n, nombre = $('#name');
+
+
+	//formbill.empty();
+	window.console.log("Billing... " + JSON.stringify(nombre.text()));
+
+	titulobill.text(nombre.text());
+	n = " 00000" + getBill(nombre.text());
+	numerobill.text(n);
+	fechabill.text(getFullDate());
+
+	formbill.popup();
+	formbill.popup('open', {positionTo: "window", transition: "flip"});
+
+}
+
 function newcli() {
 	'use strict';
-	window.console.log("New Client...");
 
+	window.console.log(titulo.text());
 	clear(forms);
-	popup_nuevo_cliente.popup('open', { positionTo: "window", transition: "flip" });
+
+	if (paneltitulo.text() === "Athomic") {
+		popup_nuevo_cliente.popup('open', { positionTo: "window", transition: "flip" });
+	} else {
+		bill();
+	}
 }
 
 function refreshSetup(datos) {
@@ -323,19 +327,31 @@ function delDB() {
 			texto("AthomicDB is saved.");
 
 		} catch (event) {
-			texto("Error: Athomic.json is not saved.");
+			texto("Error: Athomic.json is not saved. " + event.message);
 		}
 	} else {
-		nombre = $('#name').text();
-		openDB.odb.open(cons, nombre, texto, 'delete');
-		loadDB();
+		var ref, name = $('#name'), consbill = {NAME: name.text(), VERSION: 1};
+		if (paneltitulo === "Athomic") {
+			window.console.log("Deleting Record..." + nombre);
+			nombre = name.text();
+			openDB.odb.open(cons, nombre, texto, 'delete');
+			loadDB();
+		} else {
+			nombre = paneltitulo.text();
+			var ref = btn_delete.text();
+			window.console.log("Deleting Record..." + ref);
+			openDB.odb.open(consbill, ref, texto, 'delete');
+			listapanel.empty();
+			openDB.odb.open(consbill, nombre, refreshBill, 'read');
+
+		}
 	}
 }
 
 function deleteID() {
 	'use strict';
 
-	panel.panel("close");
+	panel.panel('close');
 	deltitulo.text("Deleting...");
 	popup_delete.popup('open', { positionTo: "window", transition: "flip" });
 }
@@ -350,17 +366,36 @@ function refreshBill(datos) {
 	var id, d;
 
 	if (datos) {
-		window.console.log("refreshBill...");
+		window.console.log("refreshBill..." + JSON.stringify(datos.name + " " + datos.fecha));
 
-		window.console.log(JSON.stringify(datos[empresa[1]]));
+		$("<li>").append("<a href='#' id=" + datos.name + "><h3>" + datos.titulo + "</h3><p>Concepto: " + datos.concepto + "&nbsp;&nbsp;&nbsp;&nbsp; Date: " + datos.fecha + "&nbsp;&nbsp;&nbsp;&nbsp;Bill Nº: " + datos.name + "</p></a>").appendTo(lista);
 
-		$("<li>").append("<a href='#' id=" + datos[empresa[1]] + "><h3>" + datos[empresa[1]] + "</h3><p> " + datos[empresa[2]] + "</p></a>").appendTo(lista);
+		titulobill.text(datos.titulo);
 
-		id = "#" + datos[empresa[1]];
-		$(id).click(function () {
-			window.console.log(datos[empresa[1]] + ".click");
+		id = "#" + datos.name;
 
-			facturar(datos);
+		$(id).click(function (event) {
+			var z;
+			window.console.log(id + ".click");
+			event.stopPropagation();
+
+			listapanel.empty();
+			for (z in datos) {
+				if (datos.hasOwnProperty(z)) {
+					if (datos[z]) {
+							if (z === "titulo") {
+								window.console.log("titulo: " + JSON.stringify(datos[z]));
+							} else {
+
+								$("<li id="+ z + " class='color'>").append("<span>" + datos[z] + "</span>").appendTo(listapanel);
+							}
+					}
+				}
+			}
+			btn_delete.text(datos.name);
+
+			listapanel.listview('refresh');
+			panel.panel('open');
 		});
 
 		lista.listview('refresh');
@@ -369,39 +404,54 @@ function refreshBill(datos) {
 
 function savebill() {
 	'use strict';
-	var fac = {}, consbill;
+	var ref, fac = {}, namebill = $('#name'), consbill = {NAME: namebill.text(), VERSION: 1};
 
-	if (databill) {
-		consbill = {NAME: databill[1], VERSION: 1};
+	window.console.log("Bill to: " + namebill.text());
 
-		fac = {
-			"name":		databill[1],
-			"factura":	numerobill.text(),
-			"fecha":	fechabill.text(),
-			"concepto":	concepto.text(),
-			"cantidad":	cantidad.text(),
-			"precio":	precio.text()
-		};
+	ref = numerobill.text();
+	fac = {
+		"fecha":	fechabill.text(),
+		"name":	ref.substr(1),
+		"titulo":	namebill.text(),
+		"concepto":	concepto.val(),
+		"cantidad":	cantidad.val(),
+		"precio":	precio.val()
+	};
 
-		openDB.odb.open(consbill, fac, texto, 'add');
-		lista.empty();
-		openDB.odb.open(consbill, null, refreshBill, 'read');
-	}
+	window.console.log(JSON.stringify(fac));
+
+	openDB.odb.open(consbill, fac, texto, 'add');
+	concepto.text("");
+	cantidad.text("");
+	precio.text("");
+	billID();
+}
+
+function billID() {
+	var namebill = $('#name'), consbill = {NAME: namebill.text(), VERSION: 1};
+
+	paneltitulo.text(namebill.text());
+	panel.panel('close');
+	lista.empty();
+	openDB.odb.open(consbill, null, refreshBill, 'read');
 }
 
 function loadEvents() {
 	'use strict';
 	var btn_menu = $('#menu'),
+		btn_reload = $('#reload'),
 		btn_nuevo = $('#id_nuevo_cliente'),
 		btn_setup = $('#setup'),
 		btn_import = $('#import'),
 		btn_export = $('#export'),
 		btn_save = $('#btn_save'),
-		btn_bill = $('#btn_bill'),
-		btn_delete = $('#deleteID'),
 		btn_popup_delete = $('#btn_popup_delete'),
 		btn_save_bill = $('#btn_save_bill'),
 		btn_lista = $('#lista');
+
+	btn_reload.click(function () {
+		loadDB();
+	})
 
 	btn_menu.click(function () {
 		panel.panel('open');
@@ -431,8 +481,8 @@ function loadEvents() {
 		deleteID();
 	});
 
-	btn_bill.click(function () {
-		savebill();
+	btn_billID.click(function () {
+		billID();
 	});
 
 	btn_save_bill.click(function () {

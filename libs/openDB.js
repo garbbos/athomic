@@ -23,12 +23,23 @@ var openDB = (function () {
 			}
 		},
 
+		get = function (store, data, callback) {
+			try{
+				store.get(data).onsuccess = function (e) {
+					callback("Search: " + e.target.result);
+					return e.target.result;
+				}
+			} catch (event) {
+				callback("OpenDB: Read record failed. " + event.message);
+			}
+		},
+
 		add = function (store, data, callback) {
 			var req;
 
 			try {
 				req = store.add(data).onsuccess = function (e) {
-					callback("OpenDB: Add record " + JSON.stringify(data['name']) + " success.");
+					callback("OpenDB: Add record " + JSON.stringify(data.name) + " success.");
 					return true;
 				};
 			} catch (event) {
