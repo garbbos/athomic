@@ -4,10 +4,11 @@ var openDB = (function () {
 
 	var oDB = {}, indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDb || window.msIndexedDB,
 		read = function (store, callback) {
-			var cursor;
+			var cursor, res;
 
 			try {
-				store.openCursor().onsuccess = function (e) {
+				res = store.openCursor();
+				res.onsuccess = function (e) {
 					cursor = e.target.result;
 
 					if (cursor) {
@@ -18,17 +19,21 @@ var openDB = (function () {
 						return;
 					}
 				};
+				res.onerror = function (e) {
+					callback("OpenDB: Error no data");
+					return false;
+				};
 			} catch (event) {
 				callback("OpenDB: Read DB failed. " + event.message);
 			}
 		},
 
 		get = function (store, data, callback) {
-			try{
+			try {
 				store.get(data).onsuccess = function (e) {
 					callback("Search: " + e.target.result);
 					return e.target.result;
-				}
+				};
 			} catch (event) {
 				callback("OpenDB: Read record failed. " + event.message);
 			}
@@ -44,17 +49,27 @@ var openDB = (function () {
 				};
 			} catch (event) {
 				callback("OpenDB: ADD record failed. " + event.message);
+				return false;
 			}
 		},
 
 		del = function (store, data, callback) {
+			var res;
+			
 			try {
-				store['delete'](data).onsuccess = function (e) {
-					callback("OpenDB: " + data + "  is Deleted.");
+				
+				res = store['delete'](data);
+				res.onsuccess = function (e) {
+					callback("OpenDB: Try " + data + "  is Deleted.");
 					return true;
+				};
+				res.onerror = function (e) {
+					callback("OpenDB: Error Try " + data + "  is not Deleted.");
+					return false;
 				};
 			} catch (event) {
 				callback("OpenDB: ADD record failed. " + event.message);
+				return false;
 			}
 		},
 
@@ -120,7 +135,7 @@ var openDB = (function () {
             };
 
 			request.onsuccess = function (e) {
-				window.console.log("OpenDB: open: request.onsuccess...");
+				window.console.log("OpenDB: open... request.onsuccess...");
 
 				db = e.target.result;
 				transaction = db.transaction('clientes', 'readwrite');

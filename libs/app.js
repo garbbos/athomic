@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global $, jQuery, alert, openDB, saveAs, Blob*/
+/*global $, jQuery, alert, openDB, saveAs, Blob, FileReader*/
 var cons = {NAME: "AthomicDB", VERSION: 1},
 
 	empresa = [
@@ -82,7 +82,6 @@ function getBill(name) {
 	return n;
 }
 
-
 function edit(data) {
 	'use strict';
 	var z;
@@ -104,6 +103,237 @@ function edit(data) {
 	}
 }
 
+function bill() {
+	'use strict';
+	var n, nombre = $('#name');
+
+
+	//formbill.empty();
+	window.console.log("Billing... " + JSON.stringify(nombre.text()));
+
+	titulobill.text(nombre.text());
+	n = "00000" + getBill(nombre.text());
+	numerobill.text(n);
+	fechabill.text(getFullDate());
+
+	formbill.popup();
+	formbill.popup('open', {positionTo: "window", transition: "flip"});
+
+}
+
+function newcli() {
+	'use strict';
+
+	window.console.log(titulo.text());
+	clear(forms);
+
+	if (paneltitulo.text() === "Athomic") {
+		popup_nuevo_cliente.popup('open', { positionTo: "window", transition: "flip" });
+	} else {
+		bill();
+	}
+}
+
+function refreshSetup(datos) {
+	'use strict';
+	window.console.log("refreshSetup...");
+
+	if (datos) {
+		var z;
+
+		for (z in empresa) {
+			if (empresa.hasOwnProperty(z)) {
+				if (datos[empresa[z]]) {
+					document.formo.elements[z].value = datos[empresa[z]];
+				}
+			}
+		}
+	}
+
+	titulo.text("Setup");
+	popup_nuevo_cliente.popup('open', {positionTo: "window", transition: "flip"});
+}
+
+function mysetup() {
+	'use strict';
+	var setup = { NAME: "SetupDB", VERSION: 1 };
+	window.console.log("Setup...");
+
+	clear(forms);
+
+	if (!openDB.odb.open(setup, null, refreshSetup, 'read')) {
+		titulo.text("Setup");
+		popup_nuevo_cliente.popup('open', { positionTo: "window", transition: 'flip' });
+	}
+}
+
+function importfile() {
+	'use strict';
+	
+	panel.panel('close');
+	
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		$('#readfile').popup('open', { positionTo: "window", transition: "flip" });
+	} else {
+		texto("Error: Not support File Api");
+	}
+}
+
+function importData(e) {
+	'use strict';
+	var filecontent, reader, selectfile = document.getElementById('selectfile'), file = selectfile.files[0];
+	$('#readfile').popup('close');
+	
+	texto("Importing File... ");
+	try {
+		if (file) {
+			filecontent = JSON.parse(file);
+			window.console.log(filecontent);
+			/*reader = new FileReader();
+
+			filecontent = JSON.parse(file);
+			
+
+			reader.onload = function (e) {
+				window.console.log("Import" + file);
+			};*/
+		}
+	} catch (event) {
+		window.console.log("Error read File");
+	}
+}
+
+function exportClient(data) {
+	'use strict';
+
+	if (data) {
+		clientesDB.push(JSON.stringify(data));
+		window.console.log("Export " + data[empresa[1]]);
+	}
+}
+
+function exportdata() {
+	'use strict';
+	window.console.log("Export...");
+
+	deltitulo.text("Export...");
+	openDB.odb.open(cons, null, exportClient, 'read');
+	popup_delete.popup('open', { positionTo: "window", transition: "flip" });
+}
+
+function deleteID() {
+	'use strict';
+
+	panel.panel('close');
+	deltitulo.text("Deleting...");
+	popup_delete.popup('open', { positionTo: "window", transition: "flip" });
+}
+
+function facturar(data) {
+	'use strict';
+	window.console.log("refreshBill...");
+}
+
+function refreshBill(datos) {
+	'use strict';
+	var id, d;
+
+	if (datos) {
+		window.console.log("refreshBill..." + JSON.stringify(datos.name + " " + datos.fecha));
+
+		$("<li>").append("<a href='#' id=" + datos.name + "><h3>" + datos.titulo + "</h3><p>Concepto: " + datos.concepto + "&nbsp;&nbsp;&nbsp;&nbsp; Date: " + datos.fecha + "&nbsp;&nbsp;&nbsp;&nbsp;Bill Nº: " + datos.name + "</p></a>").appendTo(lista);
+
+		titulobill.text(datos.titulo);
+
+		id = "#" + datos.name;
+
+		$(id).click(function (event) {
+			var z;
+			window.console.log(id + ".click");
+			event.stopPropagation();
+
+			listapanel.empty();
+			for (z in datos) {
+				if (datos.hasOwnProperty(z)) {
+					if (datos[z]) {
+						if (z === "titulo") {
+							window.console.log("titulo: " + JSON.stringify(datos[z]));
+						} else {
+							$("<li id=" + z + " class='color'>").append("<span>" + datos[z] + "</span>").appendTo(listapanel);
+						}
+					}
+				}
+			}
+			btn_delete.text(datos.name);
+
+			listapanel.listview('refresh');
+			panel.panel('open');
+		});
+
+		lista.listview('refresh');
+	}
+}
+
+function billID() {
+	'use strict';
+	var namebill = $('#name'), consbill = {NAME: namebill.text(), VERSION: 1};
+
+	paneltitulo.text(namebill.text());
+	panel.panel('close');
+	lista.empty();
+	openDB.odb.open(consbill, null, refreshBill, 'read');
+}
+
+function savebill() {
+	'use strict';
+	var ref, correcto = true, fac = {}, namebill = $('#name'), consbill = {NAME: namebill.text(), VERSION: 1};
+
+	window.console.log("Bill to: " + namebill.text());
+	
+	if (!concepto.val()) {
+		concepto.css('background-color', '#ffcc66').attr('placeholder', '*Concept is required*').trigger('create');
+		concepto.on('focusin', function () {
+			concepto.css('background-color', '#ffffff').trigger('create');
+		});
+		correcto = false;
+	}
+	
+	if (!cantidad.val()) {
+		cantidad.css('background-color', '#ffcc66').attr('placeholder', '*Concept is required*').trigger('create');
+		cantidad.on('focusin', function () {
+			cantidad.css('background-color', '#ffffff').trigger('create');
+		});
+		correcto = false;
+	}
+	
+	if (!precio.val()) {
+		precio.css('background-color', '#ffcc66').attr('placeholder', '*Concept is required*').trigger('create');
+		precio.on('focusin', function () {
+			precio.css('background-color', '#ffffff').trigger('create');
+		});
+		correcto = false;
+	}
+
+	ref = numerobill.text();
+	fac = {
+		"fecha":	fechabill.text(),
+		"name":	ref.substr(1),
+		"titulo":	namebill.text(),
+		"concepto":	concepto.val(),
+		"cantidad":	cantidad.val(),
+		"precio":	precio.val()
+	};
+
+	if (correcto) {
+		window.console.log(JSON.stringify(fac));
+
+		openDB.odb.open(consbill, fac, texto, 'add');
+		concepto.text("");
+		cantidad.text("");
+		precio.text("");
+		billID();
+	}
+}
 
 var refreshClientes = function (datos) {
 	'use strict';
@@ -160,10 +390,11 @@ var refreshClientes = function (datos) {
 
 function loadDB() {
 	'use strict';
-
-	lista.empty();
-	openDB.odb.open(cons, null, refreshClientes, 'read');
+	
 	paneltitulo.text("Athomic");
+	lista.empty();
+	
+	openDB.odb.open(cons, "", refreshClientes, 'read');
 }
 
 function save_client() {
@@ -226,102 +457,13 @@ function save_client() {
 	}
 }
 
-function bill() {
-	'use strict';
-	var n, nombre = $('#name');
-
-
-	//formbill.empty();
-	window.console.log("Billing... " + JSON.stringify(nombre.text()));
-
-	titulobill.text(nombre.text());
-	n = " 00000" + getBill(nombre.text());
-	numerobill.text(n);
-	fechabill.text(getFullDate());
-
-	formbill.popup();
-	formbill.popup('open', {positionTo: "window", transition: "flip"});
-
-}
-
-function newcli() {
-	'use strict';
-
-	window.console.log(titulo.text());
-	clear(forms);
-
-	if (paneltitulo.text() === "Athomic") {
-		popup_nuevo_cliente.popup('open', { positionTo: "window", transition: "flip" });
-	} else {
-		bill();
-	}
-}
-
-function refreshSetup(datos) {
-	'use strict';
-	window.console.log("refreshSetup...");
-
-	if (datos) {
-		var z;
-
-		for (z in empresa) {
-			if (empresa.hasOwnProperty(z)) {
-				if (datos[empresa[z]]) {
-					document.formo.elements[z].value = datos[empresa[z]];
-				}
-			}
-		}
-	}
-
-	titulo.text("Setup");
-	popup_nuevo_cliente.popup('open', {positionTo: "window", transition: "flip"});
-}
-
-function mysetup() {
-	'use strict';
-	var setup = { NAME: "SetupDB", VERSION: 1 };
-	window.console.log("Setup...");
-
-	clear(forms);
-
-	if (!openDB.odb.open(setup, null, refreshSetup, 'read')) {
-		titulo.text("Setup");
-		popup_nuevo_cliente.popup('open', { positionTo: "window", transition: 'flip' });
-	}
-}
-
-function importdata() {
-	'use strict';
-	window.console.log("Import...");
-
-
-}
-
-function exportClient(data) {
-	'use strict';
-
-	if (data) {
-		clientesDB.push(JSON.stringify(data));
-		window.console.log("Export " + data[empresa[1]]);
-	}
-}
-
-function exportdata() {
-	'use strict';
-	window.console.log("Export...");
-
-	deltitulo.text("Export...");
-	openDB.odb.open(cons, null, exportClient, 'read');
-	popup_delete.popup('open', { positionTo: "window", transition: "flip" });
-}
-
 function delDB() {
 	'use strict';
-	var nombre, filename = "Athomic.json", blob;
+	var nombre, consbill, filename = "Athomic.json", blob, ref, name = $('#name');
 
 	if (deltitulo.text() === "Export...") {
-
 		try {
+
 			blob = new Blob(clientesDB, {type: "text/plain;charset=utf-8"});
 			saveAs(blob, filename);
 			texto("AthomicDB is saved.");
@@ -330,110 +472,20 @@ function delDB() {
 			texto("Error: Athomic.json is not saved. " + event.message);
 		}
 	} else {
-		var ref, name = $('#name'), consbill = {NAME: name.text(), VERSION: 1};
-		if (paneltitulo === "Athomic") {
-			window.console.log("Deleting Record..." + nombre);
+		if (paneltitulo.text() === "Athomic") {
 			nombre = name.text();
 			openDB.odb.open(cons, nombre, texto, 'delete');
 			loadDB();
 		} else {
+			consbill = {NAME: paneltitulo.text(), VERSION: 1};
+			ref = btn_delete.text();
 			nombre = paneltitulo.text();
-			var ref = btn_delete.text();
-			window.console.log("Deleting Record..." + ref);
+			window.console.log("delDB: Nombre de panel " + nombre);
 			openDB.odb.open(consbill, ref, texto, 'delete');
-			listapanel.empty();
+			lista.empty();
 			openDB.odb.open(consbill, nombre, refreshBill, 'read');
-
 		}
 	}
-}
-
-function deleteID() {
-	'use strict';
-
-	panel.panel('close');
-	deltitulo.text("Deleting...");
-	popup_delete.popup('open', { positionTo: "window", transition: "flip" });
-}
-
-function facturar(data) {
-	'use strict';
-	window.console.log("refreshBill...");
-}
-
-function refreshBill(datos) {
-	'use strict';
-	var id, d;
-
-	if (datos) {
-		window.console.log("refreshBill..." + JSON.stringify(datos.name + " " + datos.fecha));
-
-		$("<li>").append("<a href='#' id=" + datos.name + "><h3>" + datos.titulo + "</h3><p>Concepto: " + datos.concepto + "&nbsp;&nbsp;&nbsp;&nbsp; Date: " + datos.fecha + "&nbsp;&nbsp;&nbsp;&nbsp;Bill Nº: " + datos.name + "</p></a>").appendTo(lista);
-
-		titulobill.text(datos.titulo);
-
-		id = "#" + datos.name;
-
-		$(id).click(function (event) {
-			var z;
-			window.console.log(id + ".click");
-			event.stopPropagation();
-
-			listapanel.empty();
-			for (z in datos) {
-				if (datos.hasOwnProperty(z)) {
-					if (datos[z]) {
-							if (z === "titulo") {
-								window.console.log("titulo: " + JSON.stringify(datos[z]));
-							} else {
-
-								$("<li id="+ z + " class='color'>").append("<span>" + datos[z] + "</span>").appendTo(listapanel);
-							}
-					}
-				}
-			}
-			btn_delete.text(datos.name);
-
-			listapanel.listview('refresh');
-			panel.panel('open');
-		});
-
-		lista.listview('refresh');
-	}
-}
-
-function savebill() {
-	'use strict';
-	var ref, fac = {}, namebill = $('#name'), consbill = {NAME: namebill.text(), VERSION: 1};
-
-	window.console.log("Bill to: " + namebill.text());
-
-	ref = numerobill.text();
-	fac = {
-		"fecha":	fechabill.text(),
-		"name":	ref.substr(1),
-		"titulo":	namebill.text(),
-		"concepto":	concepto.val(),
-		"cantidad":	cantidad.val(),
-		"precio":	precio.val()
-	};
-
-	window.console.log(JSON.stringify(fac));
-
-	openDB.odb.open(consbill, fac, texto, 'add');
-	concepto.text("");
-	cantidad.text("");
-	precio.text("");
-	billID();
-}
-
-function billID() {
-	var namebill = $('#name'), consbill = {NAME: namebill.text(), VERSION: 1};
-
-	paneltitulo.text(namebill.text());
-	panel.panel('close');
-	lista.empty();
-	openDB.odb.open(consbill, null, refreshBill, 'read');
 }
 
 function loadEvents() {
@@ -448,10 +500,10 @@ function loadEvents() {
 		btn_popup_delete = $('#btn_popup_delete'),
 		btn_save_bill = $('#btn_save_bill'),
 		btn_lista = $('#lista');
-
+	
 	btn_reload.click(function () {
 		loadDB();
-	})
+	});
 
 	btn_menu.click(function () {
 		panel.panel('open');
@@ -462,7 +514,7 @@ function loadEvents() {
 	});
 
 	btn_import.click(function () {
-		importdata();
+		importfile();
 	});
 
 	btn_export.click(function () {
@@ -492,8 +544,6 @@ function loadEvents() {
 	btn_popup_delete.click(function () {
 		delDB();
 	});
-
-
 }
 
 //Carga de página principal
