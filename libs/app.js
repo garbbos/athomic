@@ -25,6 +25,7 @@ var cons = {NAME: "AthomicDB", VERSION: 1},
 	paneltitulo = $('#panel_titulo'),
 	lista = $('#lista'),
 	listapanel = $('#datapanel'),
+	selectfile = document.getElementById('selectfile'),
 	formbill = $('#nuevobill'),
 	titulobill = $('#titulobill'),
 	numerobill = $('#numerobill'),
@@ -179,27 +180,36 @@ function importfile() {
 	}
 }
 
+function reqText(data) {
+	'use strict';
+	var lines = [];
+
+	window.console.log(data);
+	data = JSON.parse(data, function () {
+		var z;
+		for (z in data) {
+			if (data.hasOwnProperty(z)) {
+				lines = data[z];
+				window.console.log("lines " + lines);
+				//openDB.odb.open(cons, lines, texto, 'add');
+			}
+		}
+	});
+}
+
 function importData(e) {
 	'use strict';
-	var filecontent, reader, selectfile = document.getElementById('selectfile'), file = selectfile.files[0];
+	var file, reader;
 	$('#readfile').popup('close');
 	
-	texto("Importing File... ");
-	try {
-		if (file) {
-			filecontent = JSON.parse(file);
-			window.console.log(filecontent);
-			/*reader = new FileReader();
-
-			filecontent = JSON.parse(file);
-			
-
-			reader.onload = function (e) {
-				window.console.log("Import" + file);
-			};*/
-		}
-	} catch (event) {
-		window.console.log("Error read File");
+	file = e.target.files[0];
+	if (file) {
+		reader = new FileReader();
+		reader.onload = function (e) {
+			var contents = e.target.result;
+			reqText(contents);
+		};
+		reader.readAsText(file);
 	}
 }
 
@@ -501,6 +511,8 @@ function loadEvents() {
 		btn_save_bill = $('#btn_save_bill'),
 		btn_lista = $('#lista');
 	
+	selectfile.addEventListener('change', importData, false);
+
 	btn_reload.click(function () {
 		loadDB();
 	});
