@@ -67,13 +67,17 @@
                 <p class="datos"></p>
 
                 <form id="form_bill" name="formobill">
-                    <input id="concepto" type="text" name="concepto" placeholder="Concepto">
-                    <input id="cantidad" type="number" name="cantidad" placeholder="Cantidad">
-                    <input id="precio" type="number" name="precio" placeholder="Precio Unitario">
+                    <label id="labelconcepto" for="concepto">Concept</label>
+                    <input id="concepto" type="text" name="concepto" placeholder="Text...">
+                    <label for="cantidad">Items</label>
+                    <input id="cantidad" type="number" name="cantidad" placeholder="Items">
+                    <label for="precio">Price</label>
+                    <input id="precio" type="number" name="precio" placeholder="Unit price">
                 </form>
+                <p id="texto_concepto" class="red"></p>
             </div>
             <a href="#" data-rel="back" id="btn_save_bill" class="ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">Bill</a>
-            <a href="#" data-rel="back" id="btn_cancel_bill" class="ui-btn ui-icon-delete ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">Cancel</a>
+            <a href="#" data-rel="" id="btn_next_bill" class="ui-btn ui-icon-plus ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">More</a>
         </div>
         
         <!-- marco para leer fichero facilitido por pantalla -->

@@ -55,16 +55,16 @@ var openDB = (function () {
 
 		del = function (store, data, callback) {
 			var res;
-			
+
 			try {
-				
+
 				res = store['delete'](data);
 				res.onsuccess = function (e) {
-					callback("OpenDB: Try " + data + "  is Deleted.");
+					callback("OpenDB: " + data + "  is Deleted.");
 					return true;
 				};
 				res.onerror = function (e) {
-					callback("OpenDB: Error Try " + data + "  is not Deleted.");
+					callback("OpenDB: Error " + data + "  is not Deleted.");
 					return false;
 				};
 			} catch (event) {
