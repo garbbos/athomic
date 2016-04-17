@@ -14,9 +14,10 @@ var cons = {NAME: "AthomicDB", VERSION: 1},
 		"pais"
 	],
 	i = 0,
+	clientDB = [],
+	vector = [],
 	forms = $('input.myconf'),
 	panel = $('#panel'),
-	btn_billID = $('#billID'),
 	btn_delete = $('#deleteID'),
 	popup_nuevo_cliente = $('#nuevo_cliente'),
 	popup_delete = $('#popup_delete'),
@@ -25,7 +26,7 @@ var cons = {NAME: "AthomicDB", VERSION: 1},
 	lista = $('#lista'),
 	listapanel = $('#datapanel'),
 	selectfile = document.getElementById('selectfile'),
-	formbill = $('#nuevobill'),
+	nuevobill = $('#nuevobill'),
 	titulobill = $('#titulobill'),
 	numerobill = $('#numerobill'),
 	fechabill = $('#fechabill'),
@@ -115,8 +116,8 @@ function bill() {
 	numerobill.text(n);
 	fechabill.text(getFullDate());
 
-	formbill.popup();
-	formbill.popup('open', {positionTo: "window", transition: "flip"});
+	nuevobill.popup();
+	nuevobill.popup('open', {positionTo: "window", transition: "flip"});
 }
 
 function newcli() {
@@ -247,20 +248,20 @@ function refreshBill(datos) {
 		id = "#" + datos.name;
 
 		$(id).click(function (event) {
-			var z;
 			window.console.log(id + ".click");
 			event.stopPropagation();
 
 			listapanel.empty();
-			for (z in datos) {
+			for (var z in datos) {
 				if (datos.hasOwnProperty(z)) {
-					if (datos[z]) {
-						if (z !== "titulo") {
-							if (z === "0") {
-								window.console.log("datos.factura: " + JSON.stringify(datos[z]));
-								$("<li class='color'>").append("<span>" + datos[z].concepto + "</span>").appendTo(listapanel);
-							} else {
-								$("<li id=" + z + " class='color'>").append("<span>" + datos[z] + "</span>").appendTo(listapanel);
+					if (z !== "titulo") {
+						if (z === "name") {
+							$("<li class='color' id=" + z + ">").append("<span>" + datos[z] + "</span>").appendTo(listapanel);
+						} else {
+							for (var x in datos[z]) {
+								if (x === "concepto") {
+									$("<li class='color'>").append("<span>" + datos[z][x] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + datos[z].precio + "&#8364;</span>").appendTo(listapanel);
+								}
 							}
 						}
 					}
@@ -276,14 +277,16 @@ function refreshBill(datos) {
 	}
 }
 
-function bills() {
+function bills(data) {
 	'use strict';
-	var namebill = $('#name'), consbill = {NAME: namebill.text(), VERSION: 1};
 
-	paneltitulo.text(namebill.text());
-	panel.panel('close');
-	lista.empty();
-	openDB.odb.open(consbill, null, refreshBill, 'read');
+	if (data) {
+		var consbill = {NAME: data, VERSION: 1};
+		paneltitulo.text(data);
+		panel.panel('close');
+		lista.empty();
+		openDB.odb.open(consbill, null, refreshBill, 'read');
+	}
 }
 
 function checkInput(element) {
@@ -302,58 +305,52 @@ function checkInput(element) {
 	}
 }
 
-function savebill() {
-	'use strict';
-
-	nextbill();
-	bills();
-}
-
 function saveallbill() {
 	'use strict';
-	var z, fac = {}, consbill = {NAME: factura.titulo, VERSION: 1};
+	var z, myconcepto, fac = {}, consbill = {NAME: titulobill.text(), VERSION: 1}, formbill = $('#form_bill');
 
-	if (facturacompleta) {
-		fac.ref = facturacompleta[0].ref;
-		fac.titulo = facturacompleta[0].titulo;
-		fac.fecha = facturacompleta[0].fecha;
+	fac.name = numerobill.text();
+	fac.titulo = titulobill.text();
+	fac.fecha = fechabill.text();
 
-		for (z in facturacompleta) {
-			if (facturacompleta.hasOwnProperty(z)) {
-				concept = facturacompleta[z].concepto + z;
-				fac.concept = facturacompleta[z].concepto;
-				window.console.log("Factura: " + JSON.stringify(facturacompleta[z]));
+	nextbill();
+
+	if (vector) {
+		for (z in vector) {
+			if (vector.hasOwnProperty(z)) {
+				myconcepto = "concepto" + z;
+				fac[myconcepto] = vector[z];
 			}
 		}
-
-		openDB.odb.open(consbill,factura, texto, 'add');
+		window.console.log("Vector: " + JSON.stringify(vector));
 	}
+
+
+	window.console.log("Factura: " + JSON.stringify(fac));
+
+	openDB.odb.open(consbill, fac, texto, 'add');
+	clear(formbill);
+	vector = [];
+	bills(fac.titulo);
 }
 
 function conceptos(con, quantity, price) {
 	this.concepto = con;
 	this.cantidad = quantity;
 	this.precio = price;
-}
-
-function factura (ref, titulo, fecha, concepto, cantidad, precio) {
-	this.ref = ref;
-	this.titulo = titulo;
-	this.fecha = fecha;
-	this.concepto = new conceptos();
+	//this.newconcepto = new conceptos();
 }
 
 function nextbill() {
 	'use strict';
-	var textoconcepto = $('#texto_concepto'), namebill = $('#name');
+	var newbill, textoconcepto = $('#texto_concepto');
 
-		if (checkInput(concepto.val()) && checkInput(cantidad.val()) && checkInput(precio.val())) {
-			myfactura(numerobill.text(), namebill.text(), fechabill.text(), concepto.val(), cantidad.val(), precio.val());
+		if (checkInput(concepto) && checkInput(cantidad) && checkInput(precio)) {
+			newbill = new conceptos(concepto.val(), cantidad.val(), precio.val());
 
-			facturacompleta.push(factura);
-
+			vector.push(newbill);
 			textoconcepto.html("<span><b style='font'>" + concepto.val() + "</b></span>");
-			window.console.log("Bill: " + ref + " Data: " + JSON.stringify(fac));
+			window.console.log("Bill: " + JSON.stringify(vector));
 		}
 
 		concepto.val("");
@@ -368,7 +365,7 @@ var refreshClientes = function (datos) {
 	if (datos) {
 		window.console.log("refreshClientes..." + JSON.stringify(datos[empresa[1]]));
 
-		$("<li>").append("<a href='#' id=" + datos[empresa[1]] + "><h3>" + datos[empresa[1]] + "</h3><p> " + datos[empresa[2]] + "</p></a>").appendTo(lista);
+		$("<li>").append("<a href='#' id=" + datos[empresa[1]] + "><h3><span>" + datos[empresa[1]] + "</span></h3><p><span>" + datos[empresa[0]] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + datos[empresa[2]] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + datos[empresa[3]] + "</span></p></a>").appendTo(lista);
 
 		id = "#" + datos[empresa[1]];
 		$(id).click(function (event) {
@@ -397,7 +394,7 @@ var refreshClientes = function (datos) {
 			$(cifEvent).click(function (event) {
 				//event.stopPropagation();
 				window.console.log(cifEvent + ".click");
-				bills();
+				bills(datos[empresa[1]]);
 			});
 
 			$(nameEvent).click(function (event) {
@@ -562,10 +559,6 @@ function loadEvents() {
 
 	btn_delete.click(function () {
 		deleteID();
-	});
-
-	btn_billID.click(function () {
-		bills();
 	});
 
 	btn_save_bill.click(function () {
