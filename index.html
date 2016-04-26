@@ -11,12 +11,13 @@
     <script type="application/javascript" src="libs/FileSaver.min.js"></script>
     <script type="text/javascript" src="libs/jquery.min.js"></script>
     <script type="text/javascript" src="libs/jquery.mobile.min.js"></script>
+    <script type="text/javascript" src="libs/jspdf.js"></script>
     <script type="text/javascript" src="libs/openDB.js" defer></script>
+    <script type="text/javascript" src="libs/MyPdf.js" defer></script>
     <script type="text/javascript" src="libs/app.js" defer></script>
 </head>
 
 <body>
-
     <div data-role="page" data-theme="a" id="app">
         <div data-role="header" class="ui-shadow color cabecera">
                   <div data-role="navbar">
@@ -37,7 +38,6 @@
                 <ul id="lista" data-role="listview" data-filter="true" data-input="#myFilter" data-inset="true">
                 </ul>
         </div>
-
 
       <!-- marco para grabar información de clientes -->
       <div data-role="popup" data-theme="o" data-overlay-theme="a" id="nuevo_cliente" class="ui-content color">
@@ -79,7 +79,7 @@
             <a href="#" data-rel="back" id="btn_save_bill" class="ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">Bill</a>
             <a href="#" data-rel="" id="btn_next_bill" class="ui-btn ui-icon-plus ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">More</a>
         </div>
-        
+
         <!-- marco para leer fichero facilitido por pantalla -->
         <div data-role="popup" data-theme="o" data-overlay-theme="a" id="readfile" class="ui-content color">
             <div class="ui-content datos color">
@@ -110,7 +110,7 @@
 
         <!-- Panel info   -->
         <div data-role="panel" data-theme="o" data-display="overlay" id="panel" class="ui-content color">
-            <h2 id=panel_titulo>Athomic</h2>
+            <h2 id="panel_titulo">Athomic</h2>
              <div id="data" class="data">
                    <ul data-role="listview" id="datapanel" data-inset="true" class="color">
                    </ul>

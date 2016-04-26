@@ -28,14 +28,31 @@ var openDB = (function () {
 			}
 		},
 
-		get = function (store, data, callback) {
+		getID = function (store, data, callback) {
+			var res;
+
 			try {
-				store.get(data).onsuccess = function (e) {
-					callback("Search: " + e.target.result);
-					return e.target.result;
+				res = store.get(data);
+
+				res.onsuccess = function (e) {
+					window.console.log("OpenDB: Search... " + res.result.name);
+					callback(res.result);
+					return true;
+				};
+				res.onerror = function (e) {
+					callback("Error: get " + e.message);
+					return false;
 				};
 			} catch (event) {
 				callback("OpenDB: Read record failed. " + event.message);
+			}
+		},
+
+		deleteDB = function (store, callback) {
+			try {
+				indexedDB.deleteDatabase(store);
+			} catch (e) {
+				callback("OpenDB: Error " + e.message);
 			}
 		},
 
@@ -145,6 +162,10 @@ var openDB = (function () {
 					read(store, callback);
 				}
 
+				if (modo === 'get') {
+					getID(store, data, callback);
+				}
+
 				if (modo === 'add') {
 					add(store, data, callback);
 				}
@@ -155,6 +176,10 @@ var openDB = (function () {
 
 				if (modo === 'delete') {
 					del(store, data, callback);
+				}
+
+				if (modo === 'deleteDB') {
+					deleteDB(cons.NAME, callback);
 				}
 			};
 		} catch (event) {
