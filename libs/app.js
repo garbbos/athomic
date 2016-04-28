@@ -269,6 +269,7 @@ function refreshBill(datos) {
 									if (datos[z].hasOwnProperty(x) && (x === "concepto")) {
 										suma = datos[z].cantidad * datos[z].precio;
 										$("<li class='color'>").append("<span>" + datos[z].cantidad + "</span><span>&nbsp;" + datos[z][x] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + suma + "&#8364;</span>").appendTo(listapanel);
+										MYPDF.bill(datos[z]);
 									}
 								}
 							}
