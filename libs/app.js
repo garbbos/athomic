@@ -235,7 +235,7 @@ function deleteID() {
 
 function refreshBill(datos) {
 	'use strict';
-	var id, suma, mysetup;
+	var id, suma, mysetup, respuesta = [];
 
 	if (datos) {
 		window.console.log("refreshBill..." + JSON.stringify(datos));
@@ -243,7 +243,7 @@ function refreshBill(datos) {
 		$("<li>").append("<a href='#' id=" + datos.name + "><h3>" + datos.titulo + "</h3><p>Date: " + datos.fecha + "&nbsp;&nbsp;&nbsp;&nbsp;Bill Nº: " + datos.name + "&nbsp;&nbsp;&nbsp;&nbsp;</p></a>").appendTo(lista);
 
 		titulobill.text(datos.titulo);
-		openDB.odb.open(cons, datos.titulo, MYPDF.client, 'get');
+
 
 		id = "#" + datos.name;
 
@@ -257,37 +257,35 @@ function refreshBill(datos) {
 					if (z !== "titulo") {
 
 						if (z === "name") {
-							MYPDF.fac(datos[z]);
 							idname = "#fac" + z;
 							$("<li>").append("<a href='#' class='color' id=fac" + z + ">Nº " + datos[z] + "</a>").appendTo(listapanel);
 
 						} else {
-							if (z === "fecha") {
-								MYPDF.date(datos[z]);
-							} else {
-								for (x in datos[z]) {
-									if (datos[z].hasOwnProperty(x) && (x === "concepto")) {
-										suma = datos[z].cantidad * datos[z].precio;
-										$("<li class='color'>").append("<span>" + datos[z].cantidad + "</span><span>&nbsp;" + datos[z][x] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + suma + "&#8364;</span>").appendTo(listapanel);
-										MYPDF.bill(datos[z]);
-									}
+							for (x in datos[z]) {
+								if (datos[z].hasOwnProperty(x) && (x === "concepto")) {
+									suma = datos[z].cantidad * datos[z].precio;
+									$("<li class='color'>").append("<span>" + datos[z].cantidad + "</span><span>&nbsp;" + datos[z][x] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + suma + "&#8364;</span>").appendTo(listapanel);
+									MYPDF.bill(datos[z]);
 								}
 							}
-
 						}
 					}
 				}
 			}
+			openDB.odb.open(cons, datos.titulo, MYPDF.client, 'get');
+			MYPDF.date(datos.fecha);
+			MYPDF.fac(datos.name);
 
 			$(idname).click(function (event) {
-				var respuesta = [];
-
 				panel.panel('close');
 				respuesta = getSetup();
 
-				if (respuesta) {
+				if (respuesta[1]) {
 					MYPDF.setup(respuesta);
 					MYPDF.save(texto);
+					loadDB();
+				} else {
+					texto("Setup is empty, write it!!");
 				}
 			});
 
