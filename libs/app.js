@@ -17,6 +17,7 @@ var	cons = {NAME: "AthomicDB", VERSION: 1},
 	i = 0,
 	clientDB = [],
 	vector = [],
+	cliente = {},
 	forms = $('input.myconf'),
 	panel = $('#panel'),
 	btn_delete = $('#deleteID'),
@@ -137,13 +138,6 @@ function newcli() {
 	}
 }
 
-function refreshSetup(datos) {
-	'use strict';
-	window.console.log("refreshSetup...");
-
-
-}
-
 function mysetup() {
 	'use strict';
 	var datos;
@@ -233,12 +227,23 @@ function deleteID() {
 	popup_delete.popup('open', { positionTo: "window", transition: "flip" });
 }
 
+function bills(data) {
+	'use strict';
+
+	if (data) {
+		var consbill = {NAME: data, VERSION: 1};
+		paneltitulo.text(data);
+		panel.panel('close');
+		lista.empty();
+		openDB.odb.open(consbill, null, refreshBill, 'read');
+	}
+}
+
 function refreshBill(datos) {
 	'use strict';
-	var id, suma, mysetup, respuesta = [];
+	var id, suma, mysetup, respuesta = [], mydata = [];
 
 	if (datos) {
-		window.console.log("refreshBill..." + JSON.stringify(datos));
 
 		$("<li>").append("<a href='#' id=" + datos.name + "><h3>" + datos.titulo + "</h3><p>Date: " + datos.fecha + "&nbsp;&nbsp;&nbsp;&nbsp;Bill Nº: " + datos.name + "&nbsp;&nbsp;&nbsp;&nbsp;</p></a>").appendTo(lista);
 
@@ -248,42 +253,58 @@ function refreshBill(datos) {
 		id = "#" + datos.name;
 
 		$(id).click(function (event) {
-			var z, x, idname;
+			var z, x, idname, myfac = {}, myfactura = [];
 			event.stopPropagation();
 
 			listapanel.empty();
+
 			for (z in datos) {
 				if (datos.hasOwnProperty(z)) {
 					if (z !== "titulo") {
 
 						if (z === "name") {
-							idname = "#fac" + z;
-							$("<li>").append("<a href='#' class='color' id=fac" + z + ">Nº " + datos[z] + "</a>").appendTo(listapanel);
+							idname = "#fac" + datos[z];
+							$("<li>").append("<a href='#' class='color' id=fac" + datos[z] + ">Nº " + datos[z] + "</a>").appendTo(listapanel);
 
 						} else {
 							for (x in datos[z]) {
 								if (datos[z].hasOwnProperty(x) && (x === "concepto")) {
 									suma = datos[z].cantidad * datos[z].precio;
-									$("<li class='color'>").append("<span>" + datos[z].cantidad + "</span><span>&nbsp;" + datos[z][x] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + suma + "&#8364;</span>").appendTo(listapanel);
-									MYPDF.bill(datos[z]);
+									$("<li class='color myfactura'>").append("<span class='cantidad'>" + datos[z].cantidad + "</span><span>&nbsp;" + datos[z][x] + "</span><span>&nbsp;&nbsp;&nbsp;" + suma + "&#8364;</span>").appendTo(listapanel);
+									myfac = {id: idname, data: datos[z]};
+									myfactura.push(myfac);
 								}
 							}
 						}
 					}
 				}
 			}
-			openDB.odb.open(cons, datos.titulo, MYPDF.client, 'get');
-			MYPDF.date(datos.fecha);
-			MYPDF.fac(datos.name);
 
 			$(idname).click(function (event) {
+
 				panel.panel('close');
 				respuesta = getSetup();
 
 				if (respuesta[1]) {
+					MYPDF.init();
 					MYPDF.setup(respuesta);
-					MYPDF.save(texto);
-					loadDB();
+
+					MYPDF.date(datos.fecha);
+					MYPDF.fac(datos.name);
+					MYPDF.name(datos.titulo);
+
+					openDB.odb.open(cons, datos.titulo, MYPDF.client, 'get');
+
+					for (var no in myfactura) {
+						if (myfactura.hasOwnProperty(no)) {
+							if (myfactura[no].id === idname) {
+								MYPDF.bill(myfactura[no].data);
+							}
+						}
+					}
+
+					//bills(datos.titulo);
+					//loadDB();
 				} else {
 					texto("Setup is empty, write it!!");
 				}
@@ -296,18 +317,6 @@ function refreshBill(datos) {
 		});
 
 		lista.listview('refresh');
-	}
-}
-
-function bills(data) {
-	'use strict';
-
-	if (data) {
-		var consbill = {NAME: data, VERSION: 1};
-		paneltitulo.text(data);
-		panel.panel('close');
-		lista.empty();
-		openDB.odb.open(consbill, null, refreshBill, 'read');
 	}
 }
 
