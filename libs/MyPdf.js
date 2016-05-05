@@ -1,5 +1,5 @@
 /* jshint -W030 */
-var MYPDF = (function() {
+var MYPDF = (function () {
     'use strict';
     var doc,
         mypdf = {},
@@ -14,7 +14,7 @@ var MYPDF = (function() {
         a;
 
     function check(data) {
-        if(data) {
+        if (data) {
             return data;
         } else {
             return "";
@@ -31,14 +31,14 @@ var MYPDF = (function() {
     mypdf.init = function () {
         doc = new jsPDF();
 
-        x = 20,
-        y = 24,
-        total = 0,
-        iva = 0,
-        subtotal = 0,
-        totalbill = 0,
-        nombre = "client",
-        fac = "0000",
+        x = 20;
+        y = 24;
+        total = 0;
+        iva = 0;
+        subtotal = 0;
+        totalbill = 0;
+        nombre = "client";
+        fac = "0000";
         a = 132;
 
         doc.setTextColor(100);

@@ -1,0 +1,37 @@
+{
+  "name": "Athomic DB Bill App",
+  "version": "0.1",
+  "short_name": "Athomic",
+  "icons": [
+    {
+      "src": "img/favicon.ico",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "img/favicon.ico",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "img/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "locales": {
+		"es": {
+			"description": "OpenWebApp by Garbbos",
+			"developer": {
+				"url": "http://www.guribundis.com"
+			}
+		},
+  "default_locale": "en",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "landscape",
+  "permissions": [
+    "unlimitedStorage",
+    "notifications"
+  ]
+}

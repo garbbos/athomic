@@ -138,37 +138,14 @@ function newcli() {
 	}
 }
 
-function mysetup() {
-	'use strict';
-	var datos;
-
-	clear(forms);
-
-	titulo.text("Setup");
-	datos = getSetup();
-	if (datos) {
-		var z;
-
-		for (z in datos) {
-			if (datos.hasOwnProperty(z)) {
-				//if (datos[z]) {
-					document.formo.elements[z].value = datos[z];
-				//}
-			}
-		}
-	}
-
-	popup_nuevo_cliente.popup('open', {positionTo: "window", transition: "flip"});
-}
-
 function getSetup() {
 	'use strict';
 	var z, mydata = [];
 
 	window.console.log("Setup...");
 
-	for(z in empresa) {
-		if ( empresa.hasOwnProperty(z)) {
+	for (z in empresa) {
+		if (empresa.hasOwnProperty(z)) {
 			mydata.push(localStorage.getItem(empresa[z]));
 		}
 	}
@@ -179,6 +156,26 @@ function getSetup() {
 		texto("Setup: Empty data.");
 		return;
 	}
+}
+
+function mysetup() {
+	'use strict';
+	var datos, z;
+
+	clear(forms);
+
+	titulo.text("Setup");
+	datos = getSetup();
+	if (datos) {
+
+		for (z in datos) {
+			if (datos.hasOwnProperty(z)) {
+				document.formo.elements[z].value = datos[z];
+			}
+		}
+	}
+
+	popup_nuevo_cliente.popup('open', {positionTo: "window", transition: "flip"});
 }
 
 function saveSetup(data) {
@@ -216,6 +213,7 @@ function exportdata() {
 	popup_delete.popup('open', { positionTo: "window", transition: "flip" });
 	deltitulo.text("Export...");
 
+	clientDB = [];
 	openDB.odb.open(cons, null, readForExport, 'read');
 }
 
@@ -225,18 +223,6 @@ function deleteID() {
 	panel.panel('close');
 	deltitulo.text("Deleting...");
 	popup_delete.popup('open', { positionTo: "window", transition: "flip" });
-}
-
-function bills(data) {
-	'use strict';
-
-	if (data) {
-		var consbill = {NAME: data, VERSION: 1};
-		paneltitulo.text(data);
-		panel.panel('close');
-		lista.empty();
-		openDB.odb.open(consbill, null, refreshBill, 'read');
-	}
 }
 
 function refreshBill(datos) {
@@ -281,6 +267,7 @@ function refreshBill(datos) {
 			}
 
 			$(idname).click(function (event) {
+				var no;
 
 				panel.panel('close');
 				respuesta = getSetup();
@@ -295,7 +282,7 @@ function refreshBill(datos) {
 
 					openDB.odb.open(cons, datos.titulo, MYPDF.client, 'get');
 
-					for (var no in myfactura) {
+					for (no in myfactura) {
 						if (myfactura.hasOwnProperty(no)) {
 							if (myfactura[no].id === idname) {
 								MYPDF.bill(myfactura[no].data);
@@ -317,6 +304,18 @@ function refreshBill(datos) {
 		});
 
 		lista.listview('refresh');
+	}
+}
+
+function bills(data) {
+	'use strict';
+
+	if (data) {
+		var consbill = {NAME: data, VERSION: 1};
+		paneltitulo.text(data);
+		panel.panel('close');
+		lista.empty();
+		openDB.odb.open(consbill, null, refreshBill, 'read');
 	}
 }
 
@@ -448,6 +447,7 @@ function loadDB() {
 	lista.empty();
 
 	openDB.odb.open(cons, "", refreshClientes, 'read');
+	btn_delete.text("delete");
 }
 
 function reqText(data) {
@@ -571,8 +571,8 @@ function delDB() {
 			nombre = paneltitulo.text();
 			window.console.log("delDB: Nombre de panel " + nombre);
 			openDB.odb.open(consbill, ref, texto, 'delete');
-			lista.empty();
-			openDB.odb.open(consbill, nombre, refreshBill, 'read');
+			//lista.empty();
+			//openDB.odb.open(consbill, nombre, refreshBill, 'read');
 		}
 	}
 }

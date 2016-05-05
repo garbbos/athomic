@@ -4,7 +4,9 @@
     <title>Athomic</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="mobile-web-app-capable" content="yes">
 
+    <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/png" href="img/favicon.ico">
     <link rel="stylesheet" type="text/css" href="libs/estilo.css">
     <link rel="stylesheet" type="text/css" href="libs/jquery.mobile-1.4.5.min.css">
@@ -13,7 +15,6 @@
     <script type="text/javascript" src="libs/jquery.mobile.min.js"></script>
     <script type="text/javascript" src="libs/jspdf.js"></script>
     <script src="libs/jspdf.plugin.standard_fonts_metrics.js"></script>
-    
     <script type="text/javascript" src="libs/openDB.js" defer></script>
     <script type="text/javascript" src="libs/MyPdf.js" defer></script>
     <script type="text/javascript" src="libs/app.js" defer></script>
@@ -22,14 +23,14 @@
 <body>
     <div data-role="page" data-theme="a" id="app">
         <div data-role="header" class="ui-shadow color cabecera">
-                  <div data-role="navbar">
-                        <ul>
-                              <li><a href="#" id="reload" class="color">Athomic</a></li>
-                              <li><a href="#" id="setup" data-icon="bars" class="color"></a></li>
-                              <li><a href="#" id="import" data-icon="arrow-d" class="color"></a></li>
-                              <li><a href="#" id="export" data-icon="action" class="color"></a></li>
-                        </ul>
-                  </div>
+            <div data-role="navbar">
+                    <ul>
+                          <li><a href="#" id="reload" class="color">Athomic</a></li>
+                          <li><a href="#" id="setup" data-icon="bars" class="color"></a></li>
+                          <li><a href="#" id="import" data-icon="arrow-d" class="color"></a></li>
+                          <li><a href="#" id="export" data-icon="action" class="color"></a></li>
+                    </ul>
+            </div>
         </div>
 
         <div data-role="main" id="principal" class="ui-content">
