@@ -1,4 +1,4 @@
-/* jshint -W030 */
+/* jshint -W030, jsPDF */
 var MYPDF = (function () {
     'use strict';
     var doc,
@@ -43,9 +43,9 @@ var MYPDF = (function () {
 
         doc.setTextColor(100);
         doc.setFontType("bold");
-    },
+    };
 
-    mypdf.client = function (data){
+    mypdf.client = function (data) {
         var n = 68;
 
         if (data) {
@@ -67,9 +67,9 @@ var MYPDF = (function () {
 
             mypdf.save();
         }
-    },
+    };
 
-    mypdf.setup = function (data){
+    mypdf.setup = function (data) {
         var n, largo = 0;
 
         if (data) {
@@ -96,7 +96,7 @@ var MYPDF = (function () {
             }
             doc.setTextColor(100);
         }
-    },
+    };
 
     mypdf.fac = function (data) {
         if (data) {
@@ -106,7 +106,7 @@ var MYPDF = (function () {
             doc.text(25, 119, "Invoice ID: " + data);
             fac = data;
         }
-    },
+    };
 
     mypdf.date = function (data) {
         if (data) {
@@ -115,24 +115,24 @@ var MYPDF = (function () {
             doc.setFontType("bold");
             doc.text(168, 119, data);
         }
-    },
+    };
 
     mypdf.name = function (data) {
         if (data) {
             nombre = data;
         }
-    },
+    };
 
     mypdf.bill = function (data) {
         var precio = 0;
 
-        if(data) {
+        if (data) {
             doc.setFontSize(10);
             doc.line(20, 126, 190, 126);
             doc.text(22, 125, "Description");
             doc.text(100, 125, "Qty.");
             doc.text(136, 125, "Unit Price");
-            doc.text(168,125, "Total");
+            doc.text(168, 125, "Total");
 
             precio = checkNumber(data.precio);
             window.console.log("Bills total " + precio);
@@ -148,7 +148,7 @@ var MYPDF = (function () {
             doc.text(168, a, total.toString());
             a = a + 5;
         }
-    },
+    };
 
     mypdf.save = function () {
         var espacios;
@@ -189,7 +189,10 @@ var MYPDF = (function () {
 
 
         doc.save(nombre + fac + '.pdf');
-        espacios = 0, iva = 0, subtotal = 0, totalbill = 0;
+        espacios = 0;
+        iva = 0;
+        subtotal = 0;
+        totalbill = 0;
     };
 
     return mypdf;

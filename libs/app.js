@@ -324,7 +324,7 @@ function checkInput(element) {
 
 	if (element) {
 		if (!element.val()) {
-			element.css('background-color', '#ffcc66').attr('placeholder', '*Concept is required*').trigger('create');
+			element.css('background-color', '#ffcc66').attr('placeholder', '*Filed Required*').trigger('create');
 			element.on('focusin', function () {
 				element.css('background-color', '#ffffff').trigger('create');
 			});
@@ -341,7 +341,6 @@ function Conceptos(con, quantity, price) {
 	this.concepto = con;
 	this.cantidad = quantity;
 	this.precio = price;
-	//this.newconcepto = new conceptos();
 }
 
 function nextbill() {
@@ -483,43 +482,39 @@ function importData(e) {
 	}
 }
 
+function checkForm(form) {
+	'use strict';
+	if (form) {
+		for (i in form) {
+			if (form.hasOwnProperty(i)) {
+				if (i.val()) {
+					return true;
+				} else {
+
+
+				}
+			}
+		}
+	} else {
+		return false;
+	}
+}
+
 function save_client() {
 	'use strict';
-	var z, setup, correcto = true, objeto = {}, id_cif = $('#id_cif'), id_nombre = $('#id_nombre'), id_telefono = $('#id_telefono');
+	var z = 0, element, setup, correcto = true, objeto = {};
 
-	for (z in empresa) {
-		if (empresa.hasOwnProperty(z)) {
-			objeto[empresa[z]] = document.formo.elements[z].value;
-			window.console.log("save_client " + z + " " + document.formo.elements[z].value);
+	$('input.myconf').keyup(function() {
+		if ($(this).val()) {
+			objeto[empresa[z]] = $(this).val();
+			z = z + 1;
+	  	} else {
+			$(this).attr('placeholder', '*required*').trigger('create');
+			correcto = false;
 		}
-	}
+  	});
 
-	if (!objeto[empresa[0]]) {
-
-		id_cif.css('background-color', '#ffcc66').attr('placeholder', '*CIF	 is required*').trigger('create');
-		id_cif.on('focusin', function () {
-			id_cif.css('background-color', '#ffffff').trigger('create');
-		});
-		correcto = false;
-	}
-
-	if (!objeto[empresa[1]]) {
-
-		id_nombre.css('background-color', '#ffcc66').attr('placeholder', '*Nombre is required*').trigger('create');
-		id_nombre.on('focusin', function () {
-			id_nombre.css('background-color', '#ffffff').trigger('create');
-		});
-		correcto = false;
-	}
-
-	if (!objeto[empresa[2]] || (objeto[empresa[2]].length < 9)) {
-
-		id_telefono.css('background-color', '#ffcc66').attr('placeholder', '*Teléfono is required*').trigger('create');
-		id_telefono.on('focusin', function () {
-			id_telefono.css('background-color', '#ffffff').trigger('create');
-		});
-		correcto = false;
-	}
+	$('input.myconf').keyup();
 
 	if (correcto) {
 		popup_nuevo_cliente.popup('close');
@@ -533,12 +528,12 @@ function save_client() {
 			} else {
 				if (titulo.text() === 'Setup') {
 					saveSetup(objeto);
-					//openDB.odb.open(setup, objeto, texto, 'update');
 					titulo.text("New Client");
 				}
 			}
 		}
 		loadDB();
+		$('input.myconf').unbind();
 	}
 }
 
@@ -571,8 +566,8 @@ function delDB() {
 			nombre = paneltitulo.text();
 			window.console.log("delDB: Nombre de panel " + nombre);
 			openDB.odb.open(consbill, ref, texto, 'delete');
-			//lista.empty();
-			//openDB.odb.open(consbill, nombre, refreshBill, 'read');
+			lista.empty();
+			openDB.odb.open(consbill, nombre, refreshBill, 'read');
 		}
 	}
 }
@@ -587,8 +582,7 @@ function loadEvents() {
 		btn_save = $('#btn_save'),
 		btn_popup_delete = $('#btn_popup_delete'),
 		btn_save_bill = $('#btn_save_bill'),
-		btn_next_bill = $('#btn_next_bill'),
-		btn_lista = $('#lista');
+		btn_next_bill = $('#btn_next_bill');
 
 	selectfile.addEventListener('change', importData, false);
 
