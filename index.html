@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/png" href="img/favicon.ico">
     <link rel="stylesheet" type="text/css" href="libs/estilo.css">
     <link rel="stylesheet" type="text/css" href="libs/jquery.mobile-1.4.5.min.css">
@@ -20,16 +19,41 @@
     <script type="text/javascript" src="libs/MyPdf.js" defer></script>
     <script type="text/javascript" src="libs/app.js" defer></script>
 </head>
-
 <body>
     <div data-role="page" data-theme="a" id="app">
         <div data-role="header" class="ui-shadow color cabecera">
             <div data-role="navbar">
                     <ul>
-                          <li><a href="#" id="reload" class="color">Athomic</a></li>
-                          <li><a href="#" id="setup" data-icon="bars" class="color"></a></li>
-                          <li><a href="#" id="import" data-icon="arrow-d" class="color"></a></li>
-                          <li><a href="#" id="export" data-icon="action" class="color"></a></li>
+                        <li><a href="#" id="setup" class="color">
+                            <svg width="48" height="48">
+                                <circle cx="24" cy="24" r="23" stroke="#9a9a9a" stroke-width="1" fill="#ffdf4a" />
+                                <path d="M10 18 L38 18" stroke="#9a9a9a" stroke-width="3" fill="none"/>
+                                <path d="M10 24 L38 24" stroke="#9a9a9a" stroke-width="3" fill="none"/>
+                                <path d="M10 30 L38 30" stroke="#9a9a9a" stroke-width="3" fill="none"/>
+                            </svg> 
+                        </a></li>
+                        <li><a href="#" id="import" class="color">
+                            <svg width="48" height="48">
+                                <circle cx="24" cy="24" r="23" stroke="#9a9a9a" stroke-width="1" fill="#ffdf4a" />
+                                <path d="M16 16 L10 16 L10 36 L38 36 L38 16 L32 16" stroke="#9a9a9a" stroke-width="3" fill="none"/>
+                                <path d="M16 28 L32 28" stroke="#9a9a9a" stroke-width="1" fill="none"/>
+                                <path d="M16 31 L32 31" stroke="#9a9a9a" stroke-width="1" fill="none"/>
+                            </svg> 
+                        </a></li>
+                        <li><a href="#" id="export" class="color">
+                            <svg width="48" height="48">
+                                <circle cx="24" cy="24" r="23" stroke="#9a9a9a" stroke-width="1" fill="#ffdf4a" />
+                                <path d="M16 16 L10 16 L10 36 L38 36 L38 16 L32 16" stroke="#9a9a9a" stroke-width="3" fill="none"/>
+                                <path d="M20 22 Q24 12 34 10" stroke="#9a9a9a" stroke-width="2" fill="none"/>
+                                <path d="M16 31 L32 31" stroke="#9a9a9a" stroke-width="1" fill="none"/>
+                            </svg> 
+                        </a></li>
+                        <li><a href="#" id="reload" class="color">
+                            <svg height="48" width="90">
+                                <ellipse cx="48" cy="24" rx="40" ry="22" style="fill:#ffdf4a;stroke:#9a9a9a;stroke-width:1" />
+                                <text x="18" y="30" fill="black">Athomic</text>
+                            </svg></a>
+                        </li>
                     </ul>
             </div>
         </div>
@@ -98,7 +122,13 @@
 
         <!-- Botón inferior de navegación  -->
         <div id="id_btn_new" class="btn_new">
-            <a href="#" id="id_nuevo_cliente" class="ui-btn ui-btn-inline btn color">+</a>
+            <a href="#" id="id_nuevo_cliente" class="btn">
+                <svg width="48" height="48">
+                    <circle cx="24" cy="24" r="23" stroke="#9a9a9a" stroke-width="1" fill="#ffdf4a" />
+                    <path d="M12 24 L36 24" stroke="#9a9a9a" stroke-width="4" fill="none"/>
+                    <path d="M24 12 L24 36" stroke="#9a9a9a" stroke-width="4" fill="none"/>
+                </svg> 
+            </a>
         </div>
 
         <!--    Marco de muestra de comentarios   -->

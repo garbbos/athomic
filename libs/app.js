@@ -482,39 +482,28 @@ function importData(e) {
 	}
 }
 
-function checkForm(form) {
-	'use strict';
-	if (form) {
-		for (i in form) {
-			if (form.hasOwnProperty(i)) {
-				if (i.val()) {
-					return true;
-				} else {
-
-
-				}
-			}
-		}
-	} else {
-		return false;
-	}
-}
-
 function save_client() {
 	'use strict';
-	var z = 0, element, setup, correcto = true, objeto = {};
+	var z = 0, element, setup, correcto = true, objeto = {}, names = [];
 
 	$('input.myconf').keyup(function() {
 		if ($(this).val()) {
 			objeto[empresa[z]] = $(this).val();
 			z = z + 1;
 	  	} else {
+	  		names.push($(this).attr("name"));
 			$(this).attr('placeholder', '*required*').trigger('create');
 			correcto = false;
 		}
   	});
 
+	window.console.log(names);	
+	z = 0;
 	$('input.myconf').keyup();
+	$('#id_cif').focusin(function() {
+		$(this).attr("name", names[z]);
+		z = z + 1;
+	});
 
 	if (correcto) {
 		popup_nuevo_cliente.popup('close');
