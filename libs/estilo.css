@@ -51,10 +51,10 @@ a:hover{
 }
 
 .btn_new{
-    bottom: 8%;
+    bottom: 4%;
     cursor:pointer;
     position: fixed;
-    right: 10%;
+    right: 8%;
     z-index: 2;
 }
 

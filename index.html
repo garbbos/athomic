@@ -5,19 +5,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="mobile-web-app-capable" content="yes">
-
     <link rel="icon" type="image/png" href="img/favicon.ico">
     <link rel="stylesheet" type="text/css" href="libs/estilo.css">
     <link rel="stylesheet" type="text/css" href="libs/jquery.mobile-1.4.5.min.css">
-    
     <script type="application/javascript" src="libs/FileSaver.min.js"></script>
     <script type="text/javascript" src="libs/jquery.min.js"></script>
     <script type="text/javascript" src="libs/jquery.mobile.min.js"></script>
+    <script type="text/javascript" src="libs/app.js" defer></script>
+    <script type="text/javascript" src="libs/openDB.js" defer></script>
     <script type="text/javascript" src="libs/jspdf.js"></script>
     <script src="libs/jspdf.plugin.standard_fonts_metrics.js"></script>
-    <script type="text/javascript" src="libs/openDB.js" defer></script>
     <script type="text/javascript" src="libs/MyPdf.js" defer></script>
-    <script type="text/javascript" src="libs/app.js" defer></script>
 </head>
 <body>
     <div data-role="page" data-theme="a" id="app">
@@ -26,66 +24,60 @@
                     <ul>
                         <li><a href="#" id="setup" class="color">
                             <svg width="48" height="48">
-                                <circle cx="24" cy="24" r="23" stroke="#9a9a9a" stroke-width="1" fill="#ffdf4a" />
-                                <path d="M10 18 L38 18" stroke="#9a9a9a" stroke-width="3" fill="none"/>
-                                <path d="M10 24 L38 24" stroke="#9a9a9a" stroke-width="3" fill="none"/>
-                                <path d="M10 30 L38 30" stroke="#9a9a9a" stroke-width="3" fill="none"/>
-                            </svg> 
+                                <circle cx="24" cy="24" r="22" stroke="#898989" stroke-width="1" fill="#ffdf4a" />
+                                <path d="M10 18 L38 18" stroke="#898989" stroke-width="3" fill="none"/>
+                                <path d="M10 24 L38 24" stroke="#898989" stroke-width="3" fill="none"/>
+                                <path d="M10 30 L38 30" stroke="#898989" stroke-width="3" fill="none"/>
+                            </svg>
                         </a></li>
                         <li><a href="#" id="import" class="color">
                             <svg width="48" height="48">
-                                <circle cx="24" cy="24" r="23" stroke="#9a9a9a" stroke-width="1" fill="#ffdf4a" />
-                                <path d="M16 16 L10 16 L10 36 L38 36 L38 16 L32 16" stroke="#9a9a9a" stroke-width="3" fill="none"/>
-                                <path d="M16 28 L32 28" stroke="#9a9a9a" stroke-width="1" fill="none"/>
-                                <path d="M16 31 L32 31" stroke="#9a9a9a" stroke-width="1" fill="none"/>
-                            </svg> 
+                                <circle cx="24" cy="24" r="22" stroke="#898989" stroke-width="1" fill="#ffdf4a" />
+                                <path d="M16 16 L10 16 L10 36 L38 36 L38 16 L32 16" stroke="#898989" stroke-width="3" fill="none"/>
+                                <path d="M16 28 L32 28" stroke="#898989" stroke-width="1" fill="none"/>
+                                <path d="M16 31 L32 31" stroke="#898989" stroke-width="1" fill="none"/>
+                            </svg>
                         </a></li>
                         <li><a href="#" id="export" class="color">
                             <svg width="48" height="48">
-                                <circle cx="24" cy="24" r="23" stroke="#9a9a9a" stroke-width="1" fill="#ffdf4a" />
-                                <path d="M16 16 L10 16 L10 36 L38 36 L38 16 L32 16" stroke="#9a9a9a" stroke-width="3" fill="none"/>
-                                <path d="M20 22 Q24 12 34 10" stroke="#9a9a9a" stroke-width="2" fill="none"/>
-                                <path d="M16 31 L32 31" stroke="#9a9a9a" stroke-width="1" fill="none"/>
-                            </svg> 
+                                <circle cx="24" cy="24" r="22" stroke="#898989" stroke-width="1" fill="#ffdf4a" />
+                                <path d="M16 16 L10 16 L10 36 L38 36 L38 16 L32 16" stroke="#898989" stroke-width="3" fill="none"/>
+                                <path d="M20 22 Q24 12 34 10" stroke="#898989" stroke-width="2" fill="none"/>
+                                <path d="M16 31 L32 31" stroke="#898989" stroke-width="1" fill="none"/>
+                            </svg>
                         </a></li>
                         <li><a href="#" id="reload" class="color">
-                            <svg height="48" width="90">
-                                <ellipse cx="48" cy="24" rx="40" ry="22" style="fill:#ffdf4a;stroke:#9a9a9a;stroke-width:1" />
-                                <text x="18" y="30" fill="black">Athomic</text>
+                            <svg height="48" width="48">
+                                <circle cx="24" cy="24" r="22" stroke="#898989" stroke-width="1" fill="#ffdf4a" />
+                                <text x="4" y="26" font-size="9" fill="#898989">AThomiC</text>
                             </svg></a>
                         </li>
                     </ul>
             </div>
         </div>
-
         <div data-role="main" id="principal" class="ui-content">
                 <form class="ui-filterable">
                     <input id="myFilter" data-type="search" placeholder="Search...">
                 </form>
-
                 <ul id="lista" data-role="listview" data-filter="true" data-input="#myFilter" data-inset="true">
                 </ul>
         </div>
-
-      <!-- marco para grabar información de clientes -->
       <div data-role="popup" data-theme="o" data-overlay-theme="a" id="nuevo_cliente" class="ui-content color">
             <h2 id="titulo_nuevo">New Client</h2>
             <form id="form_datos" name="formo">
-                    <input class="myconf" id="id_cif" type="text" name="cif" placeholder="CIF" autofocus>
-                    <input class="myconf" id="id_nombre" type="text" name="nombre" placeholder="Nombre">
-                    <input class="myconf" id="id_telefono" type="tel" name="telefono" placeholder="Teléfono">
+                    <input class="myconf" id="id_cif" type="text" name="cif" placeholder="CIF *" autofocus>
+                    <input class="myconf" id="id_nombre" type="text" name="nombre" placeholder="Name *">
+                    <input class="myconf" id="id_telefono" type="tel" name="telefono" placeholder="Phone *">
                     <input class="myconf" id="id_email" type="email" name="email" placeholder="Email">
                     <input class="myconf" id="id_url" type="url" name="url" placeholder="Web">
-                    <input class="myconf" id="id_domicilio" type="text" name="domicilio" placeholder="Domicilio">
-                    <input class="myconf" id="id_cp" type="text" name="cp" placeholder="Código Postal">
-                    <input class="myconf" id="id_poblacion" type="text" name="poblacion" placeholder="Población">
-                    <input class="myconf" id="id_pais" type="text" name="pais" placeholder="País">
+                    <input class="myconf" id="id_domicilio" type="text" name="domicilio" placeholder="Address">
+                    <input class="myconf" id="id_cp" type="text" name="cp" placeholder="Postal Code">
+                    <input class="myconf" id="id_poblacion" type="text" name="poblacion" placeholder="City">
+                    <input class="myconf" id="id_pais" type="text" name="pais" placeholder="Country">
             </form>
             <a href="#" data-rel="" id="btn_save" class="ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">Save</a>
             <a href="#" data-rel="back" id="btn_cancel" class="ui-btn ui-icon-delete ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">Cancel</a>
         </div>
-
-        <!-- marco para grabar información de facturas -->
         <div data-role="popup" data-theme="o" data-overlay-theme="a" id="nuevobill" class="ui-content color">
             <div class="ui-content datos color">
                 <h2 id="titulobill">Bill</h2>
@@ -96,7 +88,7 @@
 
                 <form id="form_bill" name="formobill">
                     <label id="labelconcepto" for="concepto">Concept</label>
-                    <input id="concepto" type="text" name="concepto" placeholder="Text...">
+                    <input id="concepto" type="text" name="concepto" placeholder="Concept...">
                     <label for="cantidad">Items</label>
                     <input id="cantidad" type="number" name="cantidad" placeholder="Items">
                     <label for="precio">Price</label>
@@ -104,11 +96,9 @@
                 </form>
                 <p id="texto_concepto" class="red"></p>
             </div>
-            <a href="#" data-rel="back" id="btn_save_bill" class="ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">Bill</a>
+            <a href="#" data-rel="" id="btn_save_bill" class="ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">Bill</a>
             <a href="#" data-rel="" id="btn_next_bill" class="ui-btn ui-icon-plus ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">More</a>
         </div>
-
-        <!-- marco para leer fichero facilitido por pantalla -->
         <div data-role="popup" data-theme="o" data-overlay-theme="a" id="readfile" class="ui-content color">
             <div class="ui-content datos color">
                 <h2 id="titulofile">Import Database</h2>
@@ -119,30 +109,22 @@
                 </form>
             </div>
         </div>
-
-        <!-- Botón inferior de navegación  -->
         <div id="id_btn_new" class="btn_new">
             <a href="#" id="id_nuevo_cliente" class="btn">
                 <svg width="48" height="48">
-                    <circle cx="24" cy="24" r="23" stroke="#9a9a9a" stroke-width="1" fill="#ffdf4a" />
-                    <path d="M12 24 L36 24" stroke="#9a9a9a" stroke-width="4" fill="none"/>
-                    <path d="M24 12 L24 36" stroke="#9a9a9a" stroke-width="4" fill="none"/>
-                </svg> 
+                    <circle cx="24" cy="24" r="22" stroke="#898989" stroke-width="1" fill="#ffdf4a" />
+                    <path d="M12 24 L36 24" stroke="#898989" stroke-width="4" fill="none"/>
+                    <path d="M24 12 L24 36" stroke="#898989" stroke-width="4" fill="none"/>
+                </svg>
             </a>
         </div>
-
-        <!--    Marco de muestra de comentarios   -->
         <div id="status_bar" class="status ui-body-g ui-corner-all ui-shadow">
             <p id="status_msg" class="status_texto"></p>
         </div>
-
-        <!--  Popup Delete  -->
         <div data-role="popup" id="popup_delete" class="ui-content color">
             <h3 id="deltitulo">Deleting...</h3>
             <a href="#" id="btn_popup_delete" data-rel="back" class="ui-btn ui-corner-all ui-icon-alert ui-btn-icon-left ui-shadow color">Are you sure?</a>
         </div>
-
-        <!-- Panel info   -->
         <div data-role="panel" data-theme="o" data-display="overlay" id="panel" class="ui-content color">
             <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-icon-delete ui-btn-icon-notext ui-btn-right color"></a>
             <h2 id="panel_titulo">Athomic</h2>
@@ -151,7 +133,6 @@
                    </ul>
                    <a href="#" data-rel="" id="deleteID" class="ui-btn ui-icon-delete ui-btn-icon-left ui-corner-all ui-shadow color">Delete</a>
              </div>
-
              <div class="ui-content">
                  <p>Technology by</p>
                  <img src="img/linux-icon-64.png" alt="Linux">
@@ -159,7 +140,7 @@
                  <img src="img/firefox.png" alt="Firefox">
                  <img src="img/Jquery-min.png" alt="JQuery!">
                  <p>
-                     &copy;2016 Npmada.com
+                     &copy;2016 Garbbos.com
                  </p>
               </div>
         </div>

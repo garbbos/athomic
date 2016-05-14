@@ -1,8 +1,6 @@
 /* jslint browser: true */
-/* global $, jQuery, alert, openDB, saveAs, MYPDF, Blob, FileReader */
+/* global $, openDB, saveAs, MYPDF, Blob, FileReader */
 var	cons = {NAME: "AthomicDB", VERSION: 1},
-	setup = { NAME: "SetupDB", VERSION: 1 },
-
 	empresa = [
 		"cif",
 		"name",
@@ -15,8 +13,8 @@ var	cons = {NAME: "AthomicDB", VERSION: 1},
 		"pais"
 	],
 	i = 0,
-	clientDB = [],
 	vector = [],
+	clientDB = [],
 	cliente = {},
 	forms = $('input.myconf'),
 	panel = $('#panel'),
@@ -44,7 +42,7 @@ function texto(msg) {
 
 	window.console.log(msg);
 	$('#status_msg').text(msg);
-	element.animate({ opacity: ".9" });
+	element.animate({ opacity: "1" });
 	setTimeout(function () { element.animate({ opacity: '0' }); }, 3000);
 }
 
@@ -57,7 +55,6 @@ function getFullDate() {
 	m = m + 1;
 	a = dato.getFullYear();
 	dato = (d + "/" + m + "/" + a);
-	window.console.log("Date: " + dato);
 
 	return dato;
 }
@@ -66,6 +63,7 @@ function clear(objeto) {
 	'use strict';
 	if (objeto) {
 		objeto.each(function () {
+			$(this).css('background-color', '#ffffff');
 			$(this).val("");
 		});
 	}
@@ -76,7 +74,6 @@ function getBill(name) {
 	var n = parseInt(localStorage.getItem(name), 10);
 
 	if (n) {
-		window.console.log("No Factura grabado: " + n);
 		n = n + 1;
 	} else {
 		n = 1;
@@ -97,7 +94,6 @@ function edit(data) {
 
 		for (z in empresa) {
 			if (empresa.hasOwnProperty(z)) {
-				window.console.log("Edit... " + JSON.stringify(data[empresa[z]]));
 				if (data[empresa[z]]) {
 					document.formo.elements[z].value = data[empresa[z]];
 					popup_nuevo_cliente.popup('open', {positionTo: "window", transition: 'flip'});
@@ -109,7 +105,7 @@ function edit(data) {
 
 function bill() {
 	'use strict';
-	var n, nombre = $('#name');
+	var n, nombre = $('#name'), textoconcepto = $('#texto_concepto');
 
 	if (paneltitulo.text() === "Athomic") {
 		titulobill.text(nombre.text());
@@ -117,9 +113,15 @@ function bill() {
 		titulobill.text(paneltitulo.text());
 	}
 
-	n = "00000" + getBill(titulobill.text());
+	n = "000000" + getBill(titulobill.text());
 	numerobill.text(n);
 	fechabill.text(getFullDate());
+
+	concepto.val('');
+	cantidad.val('');
+	precio.val('');
+	textoconcepto.html('');
+	vector = [];
 
 	nuevobill.popup();
 	nuevobill.popup('open', {positionTo: "window", transition: "flip"});
@@ -127,13 +129,13 @@ function bill() {
 
 function newcli() {
 	'use strict';
-
-	window.console.log(titulo.text());
 	clear(forms);
 
 	if (paneltitulo.text() === "Athomic") {
+		titulo.text("New Client");
 		popup_nuevo_cliente.popup('open', { positionTo: "window", transition: "flip" });
 	} else {
+		titulo.text("New Bill");
 		bill();
 	}
 }
@@ -141,8 +143,6 @@ function newcli() {
 function getSetup() {
 	'use strict';
 	var z, mydata = [];
-
-	window.console.log("Setup...");
 
 	for (z in empresa) {
 		if (empresa.hasOwnProperty(z)) {
@@ -154,7 +154,7 @@ function getSetup() {
 		return mydata;
 	} else {
 		texto("Setup: Empty data.");
-		return;
+		return false;
 	}
 }
 
@@ -164,7 +164,7 @@ function mysetup() {
 
 	clear(forms);
 
-	titulo.text("Setup");
+	titulo.text("MySetup");
 	datos = getSetup();
 	if (datos) {
 
@@ -174,7 +174,6 @@ function mysetup() {
 			}
 		}
 	}
-
 	popup_nuevo_cliente.popup('open', {positionTo: "window", transition: "flip"});
 }
 
@@ -227,38 +226,38 @@ function deleteID() {
 
 function refreshBill(datos) {
 	'use strict';
-	var id, suma, mysetup, respuesta = [], mydata = [];
+	var id, suma, respuesta = [];
 
 	if (datos) {
-
 		$("<li>").append("<a href='#' id=" + datos.name + "><h3>" + datos.titulo + "</h3><p>Date: " + datos.fecha + "&nbsp;&nbsp;&nbsp;&nbsp;Bill Nº: " + datos.name + "&nbsp;&nbsp;&nbsp;&nbsp;</p></a>").appendTo(lista);
 
 		titulobill.text(datos.titulo);
-
-
 		id = "#" + datos.name;
 
 		$(id).click(function (event) {
-			var z, x, idname, myfac = {}, myfactura = [];
+			var z, x, idname;
 			event.stopPropagation();
-
 			listapanel.empty();
 
+			MYPDF.init();
+			openDB.odb.open(cons, datos.titulo, MYPDF.client, 'get');
 			for (z in datos) {
 				if (datos.hasOwnProperty(z)) {
-					if (z !== "titulo") {
 
+					if (z !== "titulo") {
 						if (z === "name") {
 							idname = "#fac" + datos[z];
 							$("<li>").append("<a href='#' class='color' id=fac" + datos[z] + ">Nº " + datos[z] + "</a>").appendTo(listapanel);
-
 						} else {
-							for (x in datos[z]) {
-								if (datos[z].hasOwnProperty(x) && (x === "concepto")) {
-									suma = datos[z].cantidad * datos[z].precio;
-									$("<li class='color myfactura'>").append("<span class='cantidad'>" + datos[z].cantidad + "</span><span>&nbsp;" + datos[z][x] + "</span><span>&nbsp;&nbsp;&nbsp;" + suma + "&#8364;</span>").appendTo(listapanel);
-									myfac = {id: idname, data: datos[z]};
-									myfactura.push(myfac);
+							if (z === "fecha") {
+								$("<li class='color'>").append("<span>" + datos[z] + "</span>").appendTo(listapanel);
+							} else {
+								for (x in datos[z]) {
+									if (datos[z].hasOwnProperty(x) && (x === "concepto")) {
+										suma = datos[z].cantidad * datos[z].precio;
+										$("<li class='color'>").append("<span class='cantidad'>" + datos[z].cantidad + "</span><span>&nbsp;" + datos[z][x] + "</span><span>&nbsp;&nbsp;&nbsp;" + suma + "&#8364;</span>").appendTo(listapanel);
+										MYPDF.bill(datos[z]);
+									}
 								}
 							}
 						}
@@ -267,38 +266,23 @@ function refreshBill(datos) {
 			}
 
 			$(idname).click(function (event) {
-				var no;
-
 				panel.panel('close');
+
+				MYPDF.name(datos.titulo);
+				MYPDF.date(datos.fecha);
+				MYPDF.fac(datos.name);
+
 				respuesta = getSetup();
-
 				if (respuesta[1]) {
-					MYPDF.init();
 					MYPDF.setup(respuesta);
+					MYPDF.save();
 
-					MYPDF.date(datos.fecha);
-					MYPDF.fac(datos.name);
-					MYPDF.name(datos.titulo);
-
-					openDB.odb.open(cons, datos.titulo, MYPDF.client, 'get');
-
-					for (no in myfactura) {
-						if (myfactura.hasOwnProperty(no)) {
-							if (myfactura[no].id === idname) {
-								MYPDF.bill(myfactura[no].data);
-							}
-						}
-					}
-
-					//bills(datos.titulo);
-					//loadDB();
 				} else {
 					texto("Setup is empty, write it!!");
 				}
 			});
 
 			btn_delete.text(datos.name);
-
 			listapanel.listview('refresh');
 			panel.panel('open');
 		});
@@ -322,16 +306,14 @@ function bills(data) {
 function checkInput(element) {
 	'use strict';
 
-	if (element) {
-		if (!element.val()) {
-			element.css('background-color', '#ffcc66').attr('placeholder', '*Filed Required*').trigger('create');
-			element.on('focusin', function () {
-				element.css('background-color', '#ffffff').trigger('create');
-			});
-			return false;
-		} else {
-			return true;
-		}
+	if (!element.val()) {
+		element.css('background-color', '#ffcc66').trigger('create');
+		element.on('focusin', function () {
+			element.css('background-color', '#ffffff').trigger('create');
+		});
+		return;
+	} else {
+		return true;
 	}
 }
 
@@ -347,43 +329,54 @@ function nextbill() {
 	'use strict';
 	var newbill, textoconcepto = $('#texto_concepto');
 
-	if (checkInput(concepto) && checkInput(cantidad) && checkInput(precio)) {
-		newbill = new Conceptos(concepto.val(), cantidad.val(), precio.val());
+	if (concepto.val()) {
+		if ((cantidad.val()) && (cantidad.val() > 0)) {
+			if ((precio.val()) && (precio.val() > 0)) {
+				newbill = new Conceptos(concepto.val(), cantidad.val(), precio.val());
 
-		vector.push(newbill);
-		textoconcepto.html("<span><b style='font'>" + concepto.val() + "</b></span>");
-		window.console.log("Bill: " + JSON.stringify(vector));
+				vector.push(newbill);
+				textoconcepto.html("<span><b style='font'>" + concepto.val() + "</b></span>");
+				concepto.val('');
+				cantidad.val('');
+				precio.val('');
+				return true;
+			} else {
+				checkInput(precio);
+				textoconcepto.text("Price is required.");
+				return false;
+			}
+		} else {
+			checkInput(cantidad);
+			textoconcepto.text("Items is required.");
+			return false;
+		}
+	} else {
+		checkInput(concepto);
+		textoconcepto.text("Concept is required.");
+		return false;
 	}
-	concepto.val("");
-	cantidad.val("");
-	precio.val("");
 }
 
 function saveallbill() {
 	'use strict';
 	var z, myconcepto, fac = {}, consbill = {NAME: titulobill.text(), VERSION: 1};
+
 	fac.name = numerobill.text();
 	fac.titulo = titulobill.text();
 	fac.fecha = fechabill.text();
 
-	nextbill();
-
-	if (vector) {
+	if (nextbill()) {
 		for (z in vector) {
 			if (vector.hasOwnProperty(z)) {
 				myconcepto = "concepto" + z;
 				fac[myconcepto] = vector[z];
 			}
 		}
-		window.console.log("Vector: " + JSON.stringify(vector));
+		openDB.odb.open(consbill, fac, texto, 'add');
+		nuevobill.popup('close');
+
+		bills(fac.titulo);
 	}
-
-	window.console.log("Factura: " + JSON.stringify(fac));
-
-	openDB.odb.open(consbill, fac, texto, 'add');
-	clear(formbill);
-	vector = [];
-	bills(fac.titulo);
 }
 
 var refreshClientes = function (datos) {
@@ -391,14 +384,12 @@ var refreshClientes = function (datos) {
 	var id, cifEvent = "#cif", nameEvent = "#name";
 
 	if (datos) {
-		window.console.log("refreshClientes..." + JSON.stringify(datos[empresa[1]]));
-
 		$("<li>").append("<a href='#' id=" + datos[empresa[1]] + "><h3><span>" + datos[empresa[1]] + "</span></h3><p><span>" + datos[empresa[0]] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + datos[empresa[2]] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + datos[empresa[3]] + "</span></p></a>").appendTo(lista);
 
 		id = "#" + datos[empresa[1]];
+
 		$(id).click(function (event) {
 			var z;
-			window.console.log(id + ".click");
 			event.stopPropagation();
 
 			listapanel.empty();
@@ -420,14 +411,10 @@ var refreshClientes = function (datos) {
 			}
 
 			$(cifEvent).click(function (event) {
-				//event.stopPropagation();
-				window.console.log(cifEvent + ".click");
 				bills(datos[empresa[1]]);
 			});
 
 			$(nameEvent).click(function (event) {
-				//event.stopPropagation();
-				window.console.log(nameEvent + ".click");
 				edit(datos);
 			});
 
@@ -458,7 +445,6 @@ function reqText(data) {
 		for (z in lines) {
 			if (lines.hasOwnProperty(z)) {
 				openDB.odb.open(cons, lines[z], texto, 'add');
-				window.console.log("Record: " + lines[z].name);
 			}
 		}
 		loadDB();
@@ -484,45 +470,44 @@ function importData(e) {
 
 function save_client() {
 	'use strict';
-	var z = 0, element, setup, correcto = true, objeto = {}, names = [];
+	var z = 0, teltest = "^[9|8|7|6]\d{8}$", tel, objeto = {}, cif = $('#id_cif'), nombre = $('#id_nombre'), telefono = $('#id_telefono'), email = $('#id_email'), url = $('#id_url'), domicilio = $('#id_domicilio'), cp = $('#id_cp'), poblacion = $('#id_poblacion'), pais = $('#id_pais');
 
-	$('input.myconf').keyup(function() {
-		if ($(this).val()) {
-			objeto[empresa[z]] = $(this).val();
-			z = z + 1;
-	  	} else {
-	  		names.push($(this).attr("name"));
-			$(this).attr('placeholder', '*required*').trigger('create');
-			correcto = false;
-		}
-  	});
+	if (nombre.val()) {
+		if (cif.val()) {
+			if ((telefono.val()) && (/^\d{9}$/.test(telefono.val()))) {
+				texto(telefono.val().toString().trim());
 
-	window.console.log(names);	
-	z = 0;
-	$('input.myconf').keyup();
-	$('#id_cif').focusin(function() {
-		$(this).attr("name", names[z]);
-		z = z + 1;
-	});
+				popup_nuevo_cliente.popup('close');
+				objeto = {'cif': cif.val(), 'name': nombre.val(), 'telefono': telefono.val().toString().trim(), 'email': email.val(), 'url': url.val(), 'domicilio': domicilio.val(), 'cp': cp.val(), 'poblacion': poblacion.val(), 'pais': pais.val()};
 
-	if (correcto) {
-		popup_nuevo_cliente.popup('close');
-
-		if (titulo.text() === 'New Client') {
-			openDB.odb.open(cons, objeto, texto, 'add');
-		} else {
-			if (titulo.text() === 'Update Client') {
-				openDB.odb.open(cons, objeto, texto, 'update');
-				titulo.text('New Client');
-			} else {
-				if (titulo.text() === 'Setup') {
-					saveSetup(objeto);
-					titulo.text("New Client");
+				if (titulo.text() === 'New Client') {
+					openDB.odb.open(cons, objeto, texto, 'add');
+				} else {
+					if (titulo.text() === 'Update Client') {
+						openDB.odb.open(cons, objeto, texto, 'update');
+						titulo.text('New Client');
+					} else {
+						if (titulo.text() === 'MySetup') {
+							saveSetup(objeto);
+							titulo.text("New Client");
+						}
+					}
 				}
+				loadDB();
+			} else {
+				telefono.css('background-color', '#ffcc66').trigger('create');
+				telefono.on('focusin', function () {
+					telefono.css('background-color', '#ffffff').trigger('create');
+				});
+				texto("Phone required.");
 			}
+		} else {
+			checkInput(cif);
+			texto("CIF required.");
 		}
-		loadDB();
-		$('input.myconf').unbind();
+	} else {
+		checkInput(nombre);
+		texto("Name required.");
 	}
 }
 
@@ -553,7 +538,6 @@ function delDB() {
 			consbill = {NAME: paneltitulo.text(), VERSION: 1};
 			ref = btn_delete.text();
 			nombre = paneltitulo.text();
-			window.console.log("delDB: Nombre de panel " + nombre);
 			openDB.odb.open(consbill, ref, texto, 'delete');
 			lista.empty();
 			openDB.odb.open(consbill, nombre, refreshBill, 'read');
@@ -619,7 +603,6 @@ function loadEvents() {
 //Carga de página principal
 window.onload = function () {
 	'use strict';
-	window.console.log("window.onload()... ");
 	loadDB();
 
 	loadEvents();
