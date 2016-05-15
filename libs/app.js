@@ -8,8 +8,8 @@ var	cons = {NAME: "AthomicDB", VERSION: 1},
 		"email",
 		"url",
 		"domicilio",
-		"provincia",
 		"cp",
+		"provincia",
 		"pais"
 	],
 	i = 0,
@@ -153,7 +153,6 @@ function getSetup() {
 	if (mydata) {
 		return mydata;
 	} else {
-		texto("Setup: Empty data.");
 		return false;
 	}
 }
@@ -167,7 +166,7 @@ function mysetup() {
 	titulo.text("MySetup");
 	datos = getSetup();
 	if (datos) {
-
+		
 		for (z in datos) {
 			if (datos.hasOwnProperty(z)) {
 				document.formo.elements[z].value = datos[z];
