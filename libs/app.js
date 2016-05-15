@@ -471,7 +471,7 @@ function save_client() {
 
 	if (nombre.val()) {
 		if (cif.val()) {
-			if ((telefono.val()) && (/^\d{9}$/.test(telefono.val()))) {
+			if ((telefono.val()) && (/^(\+\d{2,3}\s)*\d{9,10}$/.test(telefono.val()))) {
 
 				popup_nuevo_cliente.popup('close');
 				objeto = {'cif': cif.val(), 'name': nombre.val(), 'telefono': telefono.val().toString().trim(), 'email': email.val(), 'url': url.val(), 'domicilio': domicilio.val(), 'cp': cp.val(), 'poblacion': poblacion.val(), 'pais': pais.val()};
