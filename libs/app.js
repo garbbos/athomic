@@ -9,13 +9,12 @@ var	cons = {NAME: "AthomicDB", VERSION: 1},
 		"url",
 		"domicilio",
 		"cp",
-		"provincia",
+		"poblacion",
 		"pais"
 	],
 	i = 0,
 	vector = [],
 	clientDB = [],
-	cliente = {},
 	forms = $('input.myconf'),
 	panel = $('#panel'),
 	btn_delete = $('#deleteID'),
@@ -166,7 +165,6 @@ function mysetup() {
 	titulo.text("MySetup");
 	datos = getSetup();
 	if (datos) {
-		
 		for (z in datos) {
 			if (datos.hasOwnProperty(z)) {
 				document.formo.elements[z].value = datos[z];
@@ -185,7 +183,7 @@ function saveSetup(data) {
 			localStorage.setItem(z, data[z]);
 		}
 	}
-
+	texto("Setup saved!!");
 }
 
 function importfile() {
@@ -474,7 +472,6 @@ function save_client() {
 	if (nombre.val()) {
 		if (cif.val()) {
 			if ((telefono.val()) && (/^\d{9}$/.test(telefono.val()))) {
-				texto(telefono.val().toString().trim());
 
 				popup_nuevo_cliente.popup('close');
 				objeto = {'cif': cif.val(), 'name': nombre.val(), 'telefono': telefono.val().toString().trim(), 'email': email.val(), 'url': url.val(), 'domicilio': domicilio.val(), 'cp': cp.val(), 'poblacion': poblacion.val(), 'pais': pais.val()};
@@ -512,7 +509,7 @@ function save_client() {
 
 function delDB() {
 	'use strict';
-	var nombre, filename = "AthomicDB.json", blob, ref, name = $('#name'), consbill = {};
+	var mynb, filename = "AthomicDB.json", blob, ref, name = $('#name'), consbill = {};
 
 	if (deltitulo.text() === "Export...") {
 		try {
@@ -528,18 +525,18 @@ function delDB() {
 		}
 	} else {
 		if (paneltitulo.text() === "Athomic") {
-			nombre = name.text();
-			openDB.odb.open(cons, nombre, texto, 'delete');
-			consbill = {NAME: nombre, VERSION: 1};
+			mynb = name.text();
+			openDB.odb.open(cons, mynb, texto, 'delete');
+			consbill = {NAME: mynb, VERSION: 1};
 			openDB.odb.open(consbill, null, texto, 'deleteDB');
 			loadDB();
 		} else {
 			consbill = {NAME: paneltitulo.text(), VERSION: 1};
 			ref = btn_delete.text();
-			nombre = paneltitulo.text();
+			mynb = paneltitulo.text();
 			openDB.odb.open(consbill, ref, texto, 'delete');
 			lista.empty();
-			openDB.odb.open(consbill, nombre, refreshBill, 'read');
+			openDB.odb.open(consbill, mynb, refreshBill, 'read');
 		}
 	}
 }

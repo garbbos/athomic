@@ -5,16 +5,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="mobile-web-app-capable" content="yes">
+
     <link rel="icon" type="image/png" href="img/favicon.ico">
     <link rel="stylesheet" type="text/css" href="libs/estilo.css">
     <link rel="stylesheet" type="text/css" href="libs/jquery.mobile-1.4.5.min.css">
     <script type="application/javascript" src="libs/FileSaver.min.js"></script>
-    <script type="text/javascript" src="libs/jquery.min.js"></script>
-    <script type="text/javascript" src="libs/jquery.mobile.min.js"></script>
+    <script type="text/javascript" src="libs/jquery.min.js" defer></script>
+    <script type="text/javascript" src="libs/jquery.mobile.min.js" defer></script>
     <script type="text/javascript" src="libs/app.js" defer></script>
     <script type="text/javascript" src="libs/openDB.js" defer></script>
-    <script type="text/javascript" src="libs/jspdf.js"></script>
-    <script src="libs/jspdf.plugin.standard_fonts_metrics.js"></script>
+    <script type="text/javascript" src="libs/jspdf.js" defer></script>
+    <script src="libs/jspdf.plugin.standard_fonts_metrics.js" defer></script>
     <script type="text/javascript" src="libs/MyPdf.js" defer></script>
 </head>
 <body>
@@ -113,8 +114,8 @@
             <a href="#" id="id_nuevo_cliente" class="btn">
                 <svg width="48" height="48">
                     <circle cx="24" cy="24" r="22" stroke="#898989" stroke-width="1" fill="#ffdf4a" />
-                    <path d="M12 24 L36 24" stroke="#898989" stroke-width="4" fill="none"/>
-                    <path d="M24 12 L24 36" stroke="#898989" stroke-width="4" fill="none"/>
+                    <path d="M13 24 L35 24" stroke="#898989" stroke-width="4" fill="none"/>
+                    <path d="M24 13 L24 35" stroke="#898989" stroke-width="4" fill="none"/>
                 </svg>
             </a>
         </div>
@@ -134,11 +135,11 @@
                    <a href="#" data-rel="" id="deleteID" class="ui-btn ui-icon-delete ui-btn-icon-left ui-corner-all ui-shadow color">Delete</a>
              </div>
              <div class="ui-content">
-                 <p>Technology by</p>
-                 <img src="img/linux-icon-64.png" alt="Linux">
-                 <img src="img/html5.png" alt="HTML5">
-                 <img src="img/firefox.png" alt="Firefox">
-                 <img src="img/Jquery-min.png" alt="JQuery!">
+                 <p>
+                <svg height="48" width="48">
+                     <circle cx="24" cy="24" r="22" stroke="#898989" stroke-width="2" fill="#ffdf4a" />
+                     <text x="0" y="30" font-size="12" fill="#898989" transform="rotate(-10)">GarbboS</text>
+                 </svg></p>
                  <p>
                      &copy;2016 Garbbos.com
                  </p>
