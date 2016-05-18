@@ -1,17 +1,7 @@
 /*jshint -W055 */
 var MYPDF = (function () {
     'use strict';
-    var doc,
-        mypdf = {},
-        x,
-        y,
-        total,
-        iva,
-        subtotal,
-        totalbill,
-        nombre,
-        fac,
-        a;
+    var doc, mypdf = {}, x, y, total, iva, subtotal, nombre, nfac, a;
 
     function check(data) {
         if (data) {
@@ -21,11 +11,33 @@ var MYPDF = (function () {
         }
     }
 
-    function checkNumber(data) {
-        if (isNaN(data)) {
-            data = Number(data);
-        }
-        return data;
+    function totales() {
+        var totalbill = 0, espacios = 0;
+
+        iva = (subtotal * 0.21);
+        totalbill = subtotal + iva;
+        doc.setFontSize(11);
+
+        espacios = (180 - (subtotal.toFixed(2).toString().length));
+        doc.text(122, 259, "Subtotal ");
+        doc.text(espacios, 259, (subtotal.toFixed(2).toString()));
+
+        doc.text(122, 264, "Tax: 21%");
+        espacios = ((181 - (iva.toFixed(2).toString().length)));
+        doc.text(espacios, 264, (iva.toFixed(2).toString()));
+        doc.line(168, 268, 190, 268);
+        doc.text(122, 276, "TOTAL");
+
+        espacios = (180 - (totalbill.toFixed(2).toString().length));
+
+        doc.text(espacios, 276, (totalbill.toFixed(2).toString()));
+        doc.text(40, 260, "COMMENTS:");
+
+        doc.setFontSize(10);
+        doc.rect(20, 120, 170, 130); // empty square
+        doc.setFontSize(7);
+        doc.line(20, 288, 190, 288);
+        doc.text("@2016 Athomic WebApp.", 40, 293);
     }
 
     mypdf.init = function () {
@@ -36,9 +48,8 @@ var MYPDF = (function () {
         total = 0;
         iva = 0;
         subtotal = 0;
-        totalbill = 0;
         nombre = "client";
-        fac = "0000";
+        nfac = "0000";
         a = 132;
 
         doc.setTextColor(100);
@@ -59,8 +70,8 @@ var MYPDF = (function () {
             doc.text(122, 80, check(data.email));
             doc.text(122, 85, check(data.url));
             doc.text(122, 90, check(data.domicilio));
-            doc.text(122, 95, check(data.provincia));
-            doc.text(142, 95, check(data.cp));
+            doc.text(122, 95, check(data.poblacion));
+            doc.text(160, 95, check(data.cp));
             doc.text(122, 100, check(data.pais));
         }
     };
@@ -97,7 +108,7 @@ var MYPDF = (function () {
             doc.setFontSize(12);
             doc.setFontType("bold");
             doc.text(25, 119, "Invoice ID: " + data);
-            fac = data;
+            nfac = data;
         }
     };
 
@@ -115,71 +126,35 @@ var MYPDF = (function () {
         }
     };
 
-    mypdf.bill = function (data) {
-        var precio = 0;
+    mypdf.bill = function (concepto, cantidad, precio) {
+        var total = 0;
 
-        if (data) {
-            doc.setFontSize(10);
+        doc.setFontSize(10);
+        if (concepto && cantidad && precio) {
             doc.line(20, 126, 190, 126);
             doc.text(22, 125, "Description");
             doc.text(100, 125, "Qty.");
             doc.text(136, 125, "Unit Price");
             doc.text(168, 125, "Total");
 
-            precio = checkNumber(data.precio);
+            doc.text(22, a, concepto);
+            doc.text(100, a, cantidad.toString());
 
-            doc.text(22, a, data.concepto);
-            doc.text(100, a, data.cantidad);
-            doc.text(136, a, precio);
-            total = (precio * checkNumber(data.cantidad));
-            total = checkNumber(total);
-
+            total = (precio * cantidad);
             subtotal = total + subtotal;
+
+            doc.text(136, a, precio.toString());
             doc.text(168, a, total.toString());
             a = a + 5;
         }
     };
 
     mypdf.save = function () {
-        var espacios;
+        totales();
+        doc.save(nombre + nfac + '.pdf');
 
-        iva = (subtotal * 0.21);
-        iva = checkNumber(iva);
-        totalbill = subtotal + iva;
-        totalbill = checkNumber(totalbill);
-        subtotal = checkNumber(subtotal);
-
-        doc.setFontSize(11);
-
-        espacios = (180 - subtotal.toFixed(2).toString().length);
-        doc.text(122, 259, "Subtotal ");
-
-        doc.text(espacios, 259, subtotal.toFixed(2).toString());
-
-        doc.text(122, 264, "Tax: 21%");
-        espacios = ((180 - iva.toFixed(2).toString().length));
-
-        doc.text(espacios, 264, iva.toFixed(2).toString());
-        doc.line(168, 268, 190, 268);
-        doc.text(122, 276, "TOTAL");
-
-        espacios = (180 - totalbill.toFixed(2).toString().length);
-
-        doc.text(espacios, 276, totalbill.toFixed(2).toString());
-        doc.text(40, 260, "COMMENTS:");
-
-        doc.setFontSize(10);
-        doc.rect(20, 120, 170, 130); // empty square
-        doc.setFontSize(7);
-        doc.line(20, 288, 190, 288);
-        doc.text("@2016 Athomic WebApp.", 40, 293);
-
-
-        doc.save(nombre + fac + '.pdf');
-        espacios = 0;
         iva = 0;
         subtotal = 0;
-        totalbill = 0;
     };
 
     return mypdf;

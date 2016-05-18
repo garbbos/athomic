@@ -222,7 +222,6 @@ function deleteID() {
 }
 
 function refreshBill(datos) {
-	'use strict';
 	var id, suma, respuesta = [];
 
 	if (datos) {
@@ -253,7 +252,7 @@ function refreshBill(datos) {
 									if (datos[z].hasOwnProperty(x) && (x === "concepto")) {
 										suma = datos[z].cantidad * datos[z].precio;
 										$("<li class='color'>").append("<span class='cantidad'>" + datos[z].cantidad + "</span><span>&nbsp;" + datos[z][x] + "</span><span>&nbsp;&nbsp;&nbsp;" + suma + "&#8364;</span>").appendTo(listapanel);
-										MYPDF.bill(datos[z]);
+										MYPDF.bill(datos[z].concepto, datos[z].cantidad, datos[z].precio);
 									}
 								}
 							}
