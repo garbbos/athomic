@@ -1,17 +1,7 @@
 /* jslint browser: true */
 /* global $, openDB, saveAs, MYPDF, Blob, FileReader */
 var	cons = {NAME: "AthomicDB", VERSION: 1},
-	empresa = [
-		"cif",
-		"name",
-		"telefono",
-		"email",
-		"url",
-		"domicilio",
-		"cp",
-		"poblacion",
-		"pais"
-	],
+	empresa = ["cif", "name", "telefono", "email", "url", "domicilio", "cp", "poblacion", "pais"],
 	i = 0,
 	vector = [],
 	clientDB = [],
@@ -222,7 +212,7 @@ function deleteID() {
 }
 
 function refreshBill(datos) {
-	var id, suma, respuesta = [];
+	var id, suma, respuesta = [], namepart;
 
 	if (datos) {
 		$("<li>").append("<a href='#' id=" + datos.name + "><h3>" + datos.titulo + "</h3><p>Date: " + datos.fecha + "&nbsp;&nbsp;&nbsp;&nbsp;Bill Nº: " + datos.name + "&nbsp;&nbsp;&nbsp;&nbsp;</p></a>").appendTo(lista);
@@ -241,9 +231,10 @@ function refreshBill(datos) {
 				if (datos.hasOwnProperty(z)) {
 
 					if (z !== "titulo") {
+						namepart = datos[z].substring(0,1);
 						if (z === "name") {
-							idname = "#fac" + datos[z];
-							$("<li>").append("<a href='#' class='color' id=fac" + datos[z] + ">Nº " + datos[z] + "</a>").appendTo(listapanel);
+							idname = "#fac" + datos[z] + namepart;
+							$("<li>").append("<a href='#' class='color' id=fac" + datos[z] + namepart + ">Nº " + datos[z] + "</a>").appendTo(listapanel);
 						} else {
 							if (z === "fecha") {
 								$("<li class='color'>").append("<span>" + datos[z] + "</span>").appendTo(listapanel);
@@ -302,15 +293,10 @@ function bills(data) {
 function checkInput(element) {
 	'use strict';
 
-	if (!element.val()) {
 		element.css('background-color', '#ffcc66').trigger('create');
 		element.on('focusin', function () {
 			element.css('background-color', '#ffffff').trigger('create');
 		});
-		return;
-	} else {
-		return true;
-	}
 }
 
 function Conceptos(con, quantity, price) {
@@ -464,45 +450,87 @@ function importData(e) {
 	}
 }
 
+function saveRecord(objeto) {
+	'use strict';
+
+	if (titulo.text() === 'New Client') {
+		openDB.odb.open(cons, objeto, texto, 'add');
+	} else {
+		if (titulo.text() === 'Update Client') {
+			openDB.odb.open(cons, objeto, texto, 'update');
+			titulo.text('New Client');
+		} else {
+			if (titulo.text() === 'MySetup') {
+				saveSetup(objeto);
+				titulo.text("New Client");
+			}
+		}
+	}
+}
+
 function save_client() {
 	'use strict';
-	var z = 0, teltest = "^[9|8|7|6]\d{8}$", tel, objeto = {}, cif = $('#id_cif'), nombre = $('#id_nombre'), telefono = $('#id_telefono'), email = $('#id_email'), url = $('#id_url'), domicilio = $('#id_domicilio'), cp = $('#id_cp'), poblacion = $('#id_poblacion'), pais = $('#id_pais');
+	var objeto = {}, cif = $('#id_cif'), nombre = $('#id_nombre'), telefono = $('#id_telefono'), email = $('#id_email'), url = $('#id_url'), domicilio = $('#id_domicilio'), cp = $('#id_cp'), poblacion = $('#id_poblacion'), pais = $('#id_pais');
 
-	if (nombre.val()) {
-		if (cif.val()) {
-			if ((telefono.val()) && (/^(\+\d{2,3}\s)*\d{9,10}$/.test(telefono.val()))) {
+	if (/\w/.test(cif.val()) && /\d/.test(cif.val())) {
+		texto("cif correcto");
+		objeto.cif = cif.val();
+	} else {
+		checkInput(cif);
+	}
 
-				popup_nuevo_cliente.popup('close');
-				objeto = {'cif': cif.val(), 'name': nombre.val(), 'telefono': telefono.val().toString().trim(), 'email': email.val(), 'url': url.val(), 'domicilio': domicilio.val(), 'cp': cp.val(), 'poblacion': poblacion.val(), 'pais': pais.val()};
-
-				if (titulo.text() === 'New Client') {
-					openDB.odb.open(cons, objeto, texto, 'add');
-				} else {
-					if (titulo.text() === 'Update Client') {
-						openDB.odb.open(cons, objeto, texto, 'update');
-						titulo.text('New Client');
-					} else {
-						if (titulo.text() === 'MySetup') {
-							saveSetup(objeto);
-							titulo.text("New Client");
-						}
-					}
-				}
-				loadDB();
-			} else {
-				telefono.css('background-color', '#ffcc66').trigger('create');
-				telefono.on('focusin', function () {
-					telefono.css('background-color', '#ffffff').trigger('create');
-				});
-				texto("Phone required.");
-			}
-		} else {
-			checkInput(cif);
-			texto("CIF required.");
-		}
+	if (/\w/.test(nombre.val())) {
+		texto("nombre correcto");
+		objeto.name = nombre.val();
 	} else {
 		checkInput(nombre);
-		texto("Name required.");
+	}
+
+	if (/^(\+\d{2,3}\s)*\d{9,10}$/.test(telefono.val())) {
+		texto("telefono correcto");
+		objeto.telefono = telefono.val();
+	} else {
+		checkInput(telefono);
+	}
+
+	if  (/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(email.val())) {
+		texto("Email is not valid.");
+		objeto.email = email.val();
+	} else {
+		if (email.val()) {
+			objeto.cif = '';
+			objeto.email = '';
+			checkInput(email);
+		}
+	}
+
+	if (/^http[s]?:\/\/[\w]+([\.]+[\w]+)+$/.test(url.val())) {
+		objeto.url = url.val();
+	} else {
+		if (url.val()) {
+			objeto.cif = '';
+			objeto.url = '';
+			checkInput(url);
+		}
+	}
+
+	if (/\w/.test(cp.val())) {
+		objeto.cp = cp.val();
+	} else {
+		if (cp.val()) {
+			objeto.cif = '';
+			objeto.cp = '';
+			checkInput(cp);
+		}
+	}
+
+	if (objeto.name && objeto.cif && objeto.telefono) {
+		popup_nuevo_cliente.popup('close');
+		objeto.domicilio = domicilio.val();
+		objeto.poblacion = poblacion.val();
+		objeto.pais = pais.val();
+		saveRecord(objeto);
+		loadDB();
 	}
 }
 
