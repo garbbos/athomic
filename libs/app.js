@@ -212,7 +212,7 @@ function deleteID() {
 }
 
 function refreshBill(datos) {
-	var id, suma, respuesta = [], namepart;
+	var id, suma, respuesta = [];
 
 	if (datos) {
 		$("<li>").append("<a href='#' id=" + datos.name + "><h3>" + datos.titulo + "</h3><p>Date: " + datos.fecha + "&nbsp;&nbsp;&nbsp;&nbsp;Bill Nº: " + datos.name + "&nbsp;&nbsp;&nbsp;&nbsp;</p></a>").appendTo(lista);
@@ -231,10 +231,10 @@ function refreshBill(datos) {
 				if (datos.hasOwnProperty(z)) {
 
 					if (z !== "titulo") {
-						namepart = datos[z].substring(0,1);
+
 						if (z === "name") {
-							idname = "#fac" + datos[z] + namepart;
-							$("<li>").append("<a href='#' class='color' id=fac" + datos[z] + namepart + ">Nº " + datos[z] + "</a>").appendTo(listapanel);
+							idname = "#fac" + datos[z];
+							$("<li>").append("<a href='#' class='color' id=fac" + datos[z] + ">Nº " + datos[z] + "</a>").appendTo(listapanel);
 						} else {
 							if (z === "fecha") {
 								$("<li class='color'>").append("<span>" + datos[z] + "</span>").appendTo(listapanel);
@@ -343,8 +343,8 @@ function saveallbill() {
 	'use strict';
 	var z, myconcepto, fac = {}, consbill = {NAME: titulobill.text(), VERSION: 1};
 
-	fac.name = numerobill.text();
 	fac.titulo = titulobill.text();
+	fac.name = numerobill.text() + fac.titulo.substring(0,1);
 	fac.fecha = fechabill.text();
 
 	if (nextbill()) {
