@@ -110,6 +110,17 @@
                 </form>
             </div>
         </div>
+
+        <div data-role="popup" data-theme="o" data-overlay-theme="a" id="genPDF" class="ui-content color">
+            <div class="ui-content datos color">
+                <h2 id="tituloPDF">Add Comments to Invoice PDF...</h2>
+                <form id="formPDF" name="formoPDF">
+                    <input id="comments" type="text" name="comment" placeholder="Comments...">
+                </form>
+                <a href="#" data-rel="" id="btn_generating" class="ui-btn ui-icon-check ui-btn-icon-left ui-btn-inline ui-corner-all ui-shadow color">Generate PDF</a>
+            </div>
+        </div>
+
         <div id="id_btn_new" class="btn_new">
             <a href="#" id="id_nuevo_cliente" class="btn">
                 <svg width="48" height="48">
@@ -135,15 +146,7 @@
                    <a href="#" data-rel="" id="deleteID" class="ui-btn ui-icon-delete ui-btn-icon-left ui-corner-all ui-shadow color">Delete</a>
              </div>
              <div class="ui-content">
-                <a href="http://www.garbbos.com">
-                    <svg height="48" width="48">
-                        <circle cx="24" cy="24" r="22" stroke="#696969" stroke-width="2" fill="#ffdf4a" />
-                        <text x="0" y="30" font-size="10" fill="#696969" transform="rotate(-10)">GarbboS</text>
-                    </svg>
-                </a>
-                 <p>
-                     &copy;2016 Garbbos.com
-                 </p>
+                <a href="http://www.garbbos.com"> &copy;2016 Garbbos.com</a>
               </div>
         </div>
     </div>

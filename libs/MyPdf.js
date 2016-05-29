@@ -11,7 +11,7 @@ var MYPDF = (function () {
         }
     }
 
-    function totales() {
+    function totales(data) {
         var totalbill = 0, espacios = 0;
 
         iva = (subtotal * 0.21);
@@ -31,10 +31,12 @@ var MYPDF = (function () {
         espacios = (180 - (totalbill.toFixed(2).toString().length));
 
         doc.text(espacios, 276, (totalbill.toFixed(2).toString()));
-        doc.text(40, 260, "COMMENTS:");
 
         doc.setFontSize(10);
         doc.rect(20, 120, 170, 130); // empty square
+        if (data) {
+            doc.text(20, 260, data.substring(0, 50));
+        }
         doc.setFontSize(7);
         doc.line(20, 288, 190, 288);
         doc.text("@2016 Athomic WebApp.", 40, 293);
@@ -149,8 +151,9 @@ var MYPDF = (function () {
         }
     };
 
-    mypdf.save = function () {
-        totales();
+    mypdf.save = function (data) {
+        totales(data);
+
         doc.save(nombre + nfac + '.pdf');
 
         iva = 0;

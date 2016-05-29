@@ -261,9 +261,13 @@ function refreshBill(datos) {
 
 				respuesta = getSetup();
 				if (respuesta[1]) {
+					$('#comments').val('');
+					$('#genPDF').popup('open', { positionTo: "window", transition: "flip" });
+					$('#btn_generating').click(function (event) {
+						MYPDF.save($('#comments').val());
+						$('#genPDF').popup('close');
+					});
 					MYPDF.setup(respuesta);
-					MYPDF.save();
-
 				} else {
 					texto("Setup is empty, write it!!");
 				}
