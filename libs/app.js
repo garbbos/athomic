@@ -251,6 +251,10 @@ function refreshBill(datos) {
 					}
 				}
 			}
+			$('#btn_generating').click(function (event) {
+				MYPDF.save($('#comments').val());
+				$('#genPDF').popup('close');
+			});
 
 			$(idname).click(function (event) {
 				panel.panel('close');
@@ -261,13 +265,9 @@ function refreshBill(datos) {
 
 				respuesta = getSetup();
 				if (respuesta[1]) {
+					MYPDF.setup(respuesta);
 					$('#comments').val('');
 					$('#genPDF').popup('open', { positionTo: "window", transition: "flip" });
-					$('#btn_generating').click(function (event) {
-						MYPDF.save($('#comments').val());
-						$('#genPDF').popup('close');
-					});
-					MYPDF.setup(respuesta);
 				} else {
 					texto("Setup is empty, write it!!");
 				}
@@ -367,10 +367,13 @@ function saveallbill() {
 
 var refreshClientes = function (datos) {
 	'use strict';
-	var id, cifEvent = "#cif", nameEvent = "#name";
+	var id, mail = '', cifEvent = "#cif", nameEvent = "#name";
 
 	if (datos) {
-		$("<li>").append("<a href='#' id=" + datos[empresa[1]] + "><h3><span>" + datos[empresa[1]] + "</span></h3><p><span>" + datos[empresa[0]] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + datos[empresa[2]] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + datos[empresa[3]] + "</span></p></a>").appendTo(lista);
+		if (datos[empresa[3]]) {
+			mail = datos[empresa[3]];
+		}
+		$("<li>").append("<a href='#' id=" + datos[empresa[1]] + "><h3><span>" + datos[empresa[1]] + "</span></h3><p><span>" + datos[empresa[0]] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + datos[empresa[2]] + "</span><span>&nbsp;&nbsp;&nbsp;&nbsp;" + mail + "</span></p></a>").appendTo(lista);
 
 		id = "#" + datos[empresa[1]];
 

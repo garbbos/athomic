@@ -2,6 +2,10 @@ div{
     font-family: Utopia, Times, sans-serif;
 }
 
+a{
+    text-decoration: none;
+}
+
 a:hover{
     cursor:pointer;
 }
@@ -60,8 +64,6 @@ a:hover{
 }
 
 .red{
-    background-color: #ffa500;
-    color: red;
     font-size: .9em;
     font-style: italic;
     font-weight: bolder;
