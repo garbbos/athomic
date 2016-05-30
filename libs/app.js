@@ -212,6 +212,7 @@ function deleteID() {
 }
 
 function refreshBill(datos) {
+	'use strict';
 	var id, suma, respuesta = [];
 
 	if (datos) {
@@ -297,10 +298,10 @@ function bills(data) {
 function checkInput(element) {
 	'use strict';
 
-		element.css('background-color', '#ffcc66').trigger('create');
-		element.on('focusin', function () {
-			element.css('background-color', '#ffffff').trigger('create');
-		});
+	element.css('background-color', '#ffcc66').trigger('create');
+	element.on('focusin', function () {
+		element.css('background-color', '#ffffff').trigger('create');
+	});
 }
 
 function Conceptos(con, quantity, price) {
@@ -315,9 +316,9 @@ function nextbill() {
 	'use strict';
 	var newbill, textoconcepto = $('#texto_concepto');
 
-	if (concepto.val()) {
-		if ((cantidad.val()) && (cantidad.val() > 0)) {
-			if ((precio.val()) && (precio.val() > 0)) {
+	if (/^\w+$/.concepto.val()) {
+		if ((cantidad.val()) && (!isNaN(cantidad.val())) && (cantidad.val() > 0)) {
+			if ((precio.val()) && (!isNaN(precio.val())) && (precio.val() > 0)) {
 				newbill = new Conceptos(concepto.val(), cantidad.val(), precio.val());
 
 				vector.push(newbill);
@@ -328,12 +329,12 @@ function nextbill() {
 				return true;
 			} else {
 				checkInput(precio);
-				textoconcepto.text("Price is required.");
+				textoconcepto.text("Price is not valid.");
 				return false;
 			}
 		} else {
 			checkInput(cantidad);
-			textoconcepto.text("Items is required.");
+			textoconcepto.text("Items is not valid.");
 			return false;
 		}
 	} else {
@@ -479,63 +480,68 @@ function save_client() {
 	'use strict';
 	var objeto = {}, cif = $('#id_cif'), nombre = $('#id_nombre'), telefono = $('#id_telefono'), email = $('#id_email'), url = $('#id_url'), domicilio = $('#id_domicilio'), cp = $('#id_cp'), poblacion = $('#id_poblacion'), pais = $('#id_pais');
 
-	if (/\w/.test(cif.val()) && /\d/.test(cif.val())) {
-		texto("cif correcto");
+	if (/^\w+$/.test(cif.val())) {
 		objeto.cif = cif.val();
 	} else {
 		checkInput(cif);
 	}
 
 	if (/\w/.test(nombre.val())) {
-		texto("nombre correcto");
 		objeto.name = nombre.val();
 	} else {
 		checkInput(nombre);
 	}
 
 	if (/^(\+\d{2,3}\s)*\d{9,10}$/.test(telefono.val())) {
-		texto("telefono correcto");
 		objeto.telefono = telefono.val();
 	} else {
 		checkInput(telefono);
 	}
 
-	if  (/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(email.val())) {
-		texto("Email is not valid.");
+	if  (/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})*$/.test(email.val())) {
 		objeto.email = email.val();
 	} else {
-		if (email.val()) {
-			objeto.cif = '';
-			objeto.email = '';
-			checkInput(email);
-		}
+		checkInput(email);
+		objeto.telefono = '';
 	}
 
-	if (/^http[s]?:\/\/[\w]+([\.]+[\w]+)+$/.test(url.val())) {
+	if (/^(http[s]?:\/\/[\w]+([\.]+[\w]+)+)*$/.test(url.val())) {
 		objeto.url = url.val();
 	} else {
-		if (url.val()) {
-			objeto.cif = '';
-			objeto.url = '';
-			checkInput(url);
-		}
+		checkInput(url);
+		objeto.telefono = '';
 	}
 
-	if (/\w/.test(cp.val())) {
+	if (/\w*/.test(cp.val())) {
 		objeto.cp = cp.val();
 	} else {
-		if (cp.val()) {
-			objeto.cif = '';
-			objeto.cp = '';
-			checkInput(cp);
-		}
+		checkInput(cp);
+		objeto.telefono = '';
+	}
+
+	if (/\w*/.test(domicilio.val())) {
+		objeto.domicilio = domicilio.val();
+	} else {
+		checkInput(domicilio);
+		objeto.telefono = '';
+	}
+
+	if (/\w*/.test(poblacion.val())) {
+		objeto.poblacion = poblacion.val();
+	} else {
+		checkInput(poblacion);
+		objeto.telefono = '';
+	}
+
+	if (/\w+/.test(pais.val())) {
+		objeto.pais = pais.val();
+	} else {
+		checkInput(pais);
+		objeto.telefono = '';
 	}
 
 	if (objeto.name && objeto.cif && objeto.telefono) {
 		popup_nuevo_cliente.popup('close');
-		objeto.domicilio = domicilio.val();
-		objeto.poblacion = poblacion.val();
-		objeto.pais = pais.val();
 		saveRecord(objeto);
 		loadDB();
 	}
@@ -589,6 +595,26 @@ function loadEvents() {
 
 	selectfile.addEventListener('change', importData, false);
 
+	document.onkeydown = function(evt) {
+        evt = evt || window.event;
+        if (evt.keyCode == 107) {
+            newcli();
+            window.console.log("Event 107 - Add -");
+        }
+		if (evt.keyCode == 83) {
+			mysetup();
+            window.console.log("Event 83 - Setup -");
+		}
+		if (evt.keyCode == 73) {
+			importfile();
+            window.console.log("Event 73 - Import -");
+		}
+		if (evt.keyCode == 69) {
+			exportdata();
+            window.console.log("Event 69 - Export -");
+		}
+    };
+
 	btn_reload.click(function () {
 		loadDB();
 	});
@@ -636,4 +662,5 @@ window.onload = function () {
 	loadDB();
 
 	loadEvents();
+	texto("+ -> New Client,\ns -> Setup,\ni -> Import File,\ne -> Export DataBase");
 };
