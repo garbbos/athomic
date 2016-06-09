@@ -533,7 +533,7 @@ function save_client() {
 		objeto.telefono = '';
 	}
 
-	if (/\w+/.test(pais.val())) {
+	if (/\w*/.test(pais.val())) {
 		objeto.pais = pais.val();
 	} else {
 		checkInput(pais);
