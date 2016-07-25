@@ -1,6 +1,6 @@
 /* jslint browser: true */
 /* global $, openDB, saveAs, MYPDF, Blob, FileReader */
-var	cons = {NAME: "AthomicDB", VERSION: 1},
+var	cons = {NAME: "ThoomicDB", VERSION: 1},
 	empresa = ["cif", "name", "telefono", "email", "url", "domicilio", "cp", "poblacion", "pais"],
 	i = 0,
 	vector = [],
@@ -96,7 +96,7 @@ function bill() {
 	'use strict';
 	var n, nombre = $('#name'), textoconcepto = $('#texto_concepto');
 
-	if (paneltitulo.text() === "Athomic") {
+	if (paneltitulo.text() === "Thoomic") {
 		titulobill.text(nombre.text());
 	} else {
 		titulobill.text(paneltitulo.text());
@@ -120,7 +120,7 @@ function newcli() {
 	'use strict';
 	clear(forms);
 
-	if (paneltitulo.text() === "Athomic") {
+	if (paneltitulo.text() === "Thoomic") {
 		titulo.text("New Client");
 		popup_nuevo_cliente.popup('open', { positionTo: "window", transition: "flip" });
 	} else {
@@ -419,7 +419,7 @@ var refreshClientes = function (datos) {
 function loadDB() {
 	'use strict';
 
-	paneltitulo.text("Athomic");
+	paneltitulo.text("Thoomic");
 	lista.empty();
 
 	openDB.odb.open(cons, "", refreshClientes, 'read');
@@ -498,7 +498,7 @@ function save_client() {
 		checkInput(telefono);
 	}
 
-	if  (/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})*$/.test(email.val())) {
+	if  (/^(([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4}))*$/.test(email.val())) {
 		objeto.email = email.val();
 	} else {
 		checkInput(email);
@@ -549,22 +549,22 @@ function save_client() {
 
 function delDB() {
 	'use strict';
-	var mynb, filename = "AthomicDB.json", blob, ref, name = $('#name'), consbill = {};
+	var mynb, filename = "ThoomicDB.json", blob, ref, name = $('#name'), consbill = {};
 
 	if (deltitulo.text() === "Export...") {
 		try {
 			if (clientDB) {
 				blob = new Blob([JSON.stringify(clientDB)], {type: "application/json"});
 				saveAs(blob, filename);
-				texto("AthomicDB is saved.");
+				texto("ThoomicDB is saved.");
 			} else {
 				texto("No data in DataBase.");
 			}
 		} catch (event) {
-			texto("Error: Athomic.json is not saved. " + event.message);
+			texto("Error: Thoomic.json is not saved. " + event.message);
 		}
 	} else {
-		if (paneltitulo.text() === "Athomic") {
+		if (paneltitulo.text() === "Thoomic") {
 			mynb = name.text();
 			openDB.odb.open(cons, mynb, texto, 'delete');
 			consbill = {NAME: mynb, VERSION: 1};
@@ -597,7 +597,7 @@ function loadEvents() {
 
 	document.onkeydown = function(evt) {
         evt = evt || window.event;
-        if (evt.keyCode == 107) {
+        if (evt.keyCode == 65) {
             newcli();
             window.console.log("Event 107 - Add -");
         }
@@ -662,5 +662,5 @@ window.onload = function () {
 	loadDB();
 
 	loadEvents();
-	texto("+ -> New Client,\ns -> Setup,\ni -> Import File,\ne -> Export DataBase");
+	//texto("+ -> New Client,\ns -> Setup,\ni -> Import File,\ne -> Export DataBase");
 };

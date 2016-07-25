@@ -39,7 +39,7 @@ var MYPDF = (function () {
         }
         doc.setFontSize(7);
         doc.line(20, 288, 190, 288);
-        doc.text("@2016 Athomic WebApp.", 40, 293);
+        doc.text("@2016 Thoomic WebApp.", 40, 293);
     }
 
     mypdf.init = function () {

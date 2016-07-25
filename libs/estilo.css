@@ -1,5 +1,11 @@
+body{
+    background-image: url('../img/logoback.svg');
+    background-position: bottom;
+    background-repeat: no-repeat;
+}
+
 div{
-    font-family: Utopia, Times, sans-serif;
+    font-family: Trebuchet, Helvetica, sans-serif;
 }
 
 a{
